@@ -100,3 +100,5 @@ Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
 npm install --save @nestjs/typeorm typeorm mysql2
 npm i @nestjs/jwt
 npm i class-validator
+npm i class-transformer
+npm  i --save @nestjs/config
