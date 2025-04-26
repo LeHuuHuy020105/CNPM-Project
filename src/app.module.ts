@@ -6,6 +6,7 @@ import { dataSourceOption } from 'db/data-source';
 import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
 import { ConfigModule } from '@nestjs/config';
+import { CategoryModule } from './category/category.module';
 
 @Module({
   imports: [
@@ -13,6 +14,7 @@ import { ConfigModule } from '@nestjs/config';
     UserModule,
     AuthModule,
     ConfigModule.forRoot(),
+    CategoryModule,
   ],
   controllers: [AppController],
   providers: [AppService],
