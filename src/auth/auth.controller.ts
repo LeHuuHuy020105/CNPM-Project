@@ -9,6 +9,7 @@ import { RegisterUserDto } from './dto/register-user-dto';
 import { AuthService } from './auth.service';
 import { User } from 'src/entities/user.entity';
 import { LoginUserDto } from './dto/login-user-dto';
+import { ApiResponse } from '@nestjs/swagger';
 
 @Controller('auth')
 export class AuthController {
@@ -20,6 +21,8 @@ export class AuthController {
   }
 
   @Post('login')
+  @ApiResponse({ status: 201, description: 'Login successfully!' })
+  @ApiResponse({ status: 401, description: 'Login failed!' })
   @UsePipes(ValidationPipe)
   login(@Body() loginUserDto: LoginUserDto): Promise<any> {
     console.log('login-api');

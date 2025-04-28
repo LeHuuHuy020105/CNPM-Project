@@ -101,4 +101,7 @@ npm install --save @nestjs/typeorm typeorm mysql2
 npm i @nestjs/jwt
 npm i class-validator
 npm i class-transformer
-npm  i --save @nestjs/config
+npm i --save @nestjs/config
+npm i @nestjs/swagger
+npm i -D @types/multer
+npm i path
