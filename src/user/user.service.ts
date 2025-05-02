@@ -19,12 +19,22 @@ export class UserService {
     const page = Number(query.page) || 1;
     const skip = (page - 1) * items_per_page;
     const keyword = query.search || '';
+    const searchBy = query.search_by || '';
+    let whereCondition = {};
+    if (keyword && searchBy) {
+      if (['email', 'first_name', 'phone'].includes(searchBy)) {
+        whereCondition = { [searchBy]: Like(`%${keyword}%`) };
+      } else {
+        // Nếu search_by không hợp lệ, trả về lỗi hoặc tìm kiếm mặc định
+        throw new Error(
+          'Invalid search_by field. Use email, first_name, or phone_number.',
+        );
+      }
+    }
+    console.log(whereCondition);
+    console.log('Search params:', { keyword, searchBy }); // Log keyword và searchBy
     const [res, total] = await this.userRepository.findAndCount({
-      where: [
-        { first_name: Like('%' + keyword + '%') },
-        { last_name: Like('%' + keyword + '%') },
-        { email: Like('%' + keyword + '%') },
-      ],
+      where: whereCondition,
       order: { created_at: 'DESC' },
       take: items_per_page,
       skip: skip,
@@ -33,6 +43,7 @@ export class UserService {
         'first_name',
         'last_name',
         'email',
+        'phone',
         'status',
         'created_at',
         'created_update',

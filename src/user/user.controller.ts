@@ -31,9 +31,14 @@ export class UserController {
 
   @Get()
   @UseGuards(AuthGuard)
-  @ApiQuery({ name: 'page' })
-  @ApiQuery({ name: 'items_per_page' })
-  @ApiQuery({ name: 'search' })
+  @ApiQuery({ name: 'page', required: false })
+  @ApiQuery({ name: 'items_per_page', required: false })
+  @ApiQuery({ name: 'search', required: false })
+  @ApiQuery({
+    name: 'search_by',
+    required: false,
+    enum: ['email', 'first_name', 'phone'],
+  }) // Chỉ định các trường hợp lệ
   findAll(@Query() query: FilterUserDto): Promise<any> {
     console.log(query);
     return this.userService.findAll(query);

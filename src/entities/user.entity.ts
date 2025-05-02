@@ -23,6 +23,9 @@ export class User {
   @Column()
   email: string;
 
+  @Column()
+  phone: string;
+
   @Column({ nullable: true, default: null })
   refresh_token: string;
 

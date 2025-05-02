@@ -4,7 +4,10 @@ import {
   PrimaryGeneratedColumn,
   CreateDateColumn,
   UpdateDateColumn,
+  ManyToOne,
+  JoinColumn,
 } from 'typeorm';
+import { Category } from './category.entity';
 
 @Entity('food_items')
 export class FoodItem {
@@ -23,8 +26,8 @@ export class FoodItem {
   @Column()
   description: string;
 
-  @Column({ type: 'longblob' }) // Lưu dữ liệu nhị phân
-  image: Buffer;
+  @Column({ nullable: true, default: null })
+  image: string;
 
   @CreateDateColumn()
   created_at: Date;
@@ -37,4 +40,8 @@ export class FoodItem {
 
   @Column()
   stock: number;
+
+  @ManyToOne(() => Category, (category) => category.foodItems)
+  @JoinColumn({ name: 'category_id' })
+  category: Category;
 }

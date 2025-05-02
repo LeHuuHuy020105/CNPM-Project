@@ -4,7 +4,9 @@ import {
   PrimaryGeneratedColumn,
   CreateDateColumn,
   UpdateDateColumn,
+  OneToMany,
 } from 'typeorm';
+import { FoodItem } from './fooditem.entity';
 
 @Entity('categories')
 export class Category {
@@ -25,4 +27,10 @@ export class Category {
 
   @UpdateDateColumn()
   created_update: Date;
+
+  @Column({ nullable: true, default: null })
+  image: string;
+
+  @OneToMany(() => FoodItem, (foodItem) => foodItem.category)
+  foodItems: FoodItem[];
 }

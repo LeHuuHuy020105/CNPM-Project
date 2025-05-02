@@ -105,3 +105,4 @@ npm i --save @nestjs/config
 npm i @nestjs/swagger
 npm i -D @types/multer
 npm i path
+npm install class-validator class-transformer

@@ -7,6 +7,7 @@ import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
 import { ConfigModule } from '@nestjs/config';
 import { CategoryModule } from './category/category.module';
+import { FoodModule } from './food/food.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { CategoryModule } from './category/category.module';
     AuthModule,
     ConfigModule.forRoot(),
     CategoryModule,
+    FoodModule,
   ],
   controllers: [AppController],
   providers: [AppService],
