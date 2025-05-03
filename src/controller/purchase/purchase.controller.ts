@@ -9,11 +9,11 @@ import {
   Req,
   UseGuards,
 } from '@nestjs/common';
-import { PurchaseOrderService } from './purchase.service';
-import { CreatePurchaseOrderDto } from './dto/create_purchase_order_dto';
+import { PurchaseOrderService } from '../../service/purchase/purchase.service';
+import { CreatePurchaseOrderDto } from '../../dto/purchase/create_purchase_order_dto';
 import { PurchaseOrder } from 'src/entities/purchase.entity';
 import { AuthGuard } from 'src/auth/auth-guard';
-import { UpdatePurchaseOrderDto } from './dto/update_purchase_order_dto';
+import { UpdatePurchaseOrderDto } from '../../dto/purchase/update_purchase_order_dto';
 import { DeleteResult, UpdateResult } from 'typeorm';
 
 @Controller('purchase')

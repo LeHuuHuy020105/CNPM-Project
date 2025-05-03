@@ -6,11 +6,11 @@ import {
   Query,
 } from '@nestjs/common';
 import { Category } from 'src/entities/category.entity';
-import { CreateCategoryDto } from './dto/create_category_dto';
+import { CreateCategoryDto } from 'src/dto/category/create_category_dto';
 import { DeleteResult, Like, Repository, UpdateResult } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { deleteOldImage } from 'helpers/deleteOldImage';
-import { FilterCategoryDto } from './dto/filter_category_dto';
+import { FilterCategoryDto } from 'src/dto/category/filter_category_dto';
 
 @Injectable()
 export class CategoryService {

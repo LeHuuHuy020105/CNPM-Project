@@ -13,66 +13,63 @@ import {
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import { UserService } from './user.service';
-import { User } from '../entities/user.entity';
+import { CategoryService } from 'src/service/category/category.service';
+import { Category } from 'src/entities/category.entity';
+import { CreateCategoryDto } from '../../dto/category/create_category_dto';
+import { UpdateCategoryDto } from '../../dto/category/update_category_dto';
 import { AuthGuard } from 'src/auth/auth-guard';
-import { CreateUserDto } from './dto/create_user_dto';
-import { UpdateUserDto } from './dto/update_user_dto';
-import { FilterUserDto } from './dto/filter_user_dto';
-import { ApiBearerAuth, ApiQuery } from '@nestjs/swagger';
+import { FoodItem } from 'src/entities/fooditem.entity';
+import { ApiQuery } from '@nestjs/swagger';
+import { FilterCategoryDto } from '../../dto/category/filter_category_dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { storageConfig } from 'helpers/config';
 import { extname } from 'path';
+import { UpdateResult } from 'typeorm';
 
-@ApiBearerAuth()
-@Controller('users')
-export class UserController {
-  constructor(private userService: UserService) {}
-
+@Controller('category')
+export class CategoryController {
+  constructor(private categoryService: CategoryService) {}
   @Get()
-  @UseGuards(AuthGuard)
   @ApiQuery({ name: 'page', required: false })
   @ApiQuery({ name: 'items_per_page', required: false })
   @ApiQuery({ name: 'search', required: false })
-  @ApiQuery({
-    name: 'search_by',
-    required: false,
-    enum: ['email', 'first_name', 'phone'],
-  }) // Chỉ định các trường hợp lệ
-  findAll(@Query() query: FilterUserDto): Promise<any> {
-    console.log(query);
-    return this.userService.findAll(query);
+  findAll(@Query() query: FilterCategoryDto): Promise<any> {
+    return this.categoryService.findAll(query);
   }
-
   @Get(':id')
-  @UseGuards(AuthGuard)
-  getUserById(@Param('id') id: string): Promise<any> {
-    return this.userService.findUserById(Number(id));
+  getCategoryById(@Param('id') id: string): Promise<any> {
+    return this.categoryService.findById(Number(id));
   }
 
   @Post()
   @UseGuards(AuthGuard)
-  create(@Body() createUserDto: CreateUserDto): Promise<User> {
-    return this.userService.create(createUserDto);
+  create(
+    @Req() req: any,
+    @Body() createCategoryDto: CreateCategoryDto,
+  ): Promise<Category> {
+    return this.categoryService.create(createCategoryDto);
   }
 
   @Put(':id')
   @UseGuards(AuthGuard)
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.userService.update(Number(id), updateUserDto);
+  update(
+    @Param('id') id: string,
+    @Body() updateCategoryDTO: UpdateCategoryDto,
+  ) {
+    return this.categoryService.update(Number(id), updateCategoryDTO);
   }
 
   @Delete(':id')
   @UseGuards(AuthGuard)
   delete(@Param('id') id: string) {
-    return this.userService.delete(Number(id));
+    return this.categoryService.delete(Number(id));
   }
 
-  @Post('upload-avatar')
+  @Post(':categoryId/upload-image-category')
   @UseGuards(AuthGuard)
   @UseInterceptors(
-    FileInterceptor('avatar', {
-      storage: storageConfig('avatar'),
+    FileInterceptor('image-category', {
+      storage: storageConfig('category'),
       fileFilter: (req, file, cb) => {
         const ext = extname(file.originalname);
         const allowedExtArr = ['.jpg', '.png', '.jpeg'];
@@ -90,8 +87,13 @@ export class UserController {
       },
     }),
   ) // trung voi field name khi fontend truyen len
-  uploadAvatar(@Req() req: any, @UploadedFile() file: Express.Multer.File) {
-    console.log('upload avatar');
+  uploadAvatar(
+    @Param('categoryId') categoryID: string,
+    @Req()
+    req: any,
+    @UploadedFile() file: Express.Multer.File,
+  ): Promise<UpdateResult> {
+    console.log('upload image category');
     console.log('user data ', req.user_data);
     console.log(file);
     if (req.fileValidationError) {
@@ -100,8 +102,8 @@ export class UserController {
     if (!file) {
       throw new BadRequestException('File is required');
     }
-    this.userService.updateAvatar(
-      req.user_data.id,
+    return this.categoryService.updateImage(
+      Number(categoryID),
       file.destination + '/' + file.filename,
     );
   }

@@ -12,15 +12,15 @@ import {
   UpdateResult,
   DeleteResult,
 } from 'typeorm';
-import { PurchaseOrder } from '../entities/purchase.entity';
-import { Supplier } from '../entities/supplier.entity';
-import { User } from '../entities/user.entity';
-import { FoodItem } from '../entities/fooditem.entity';
-import { PurchaseOrderDetail } from '../entities/purchase_order_detail.entity';
-import { CreatePurchaseOrderDto } from './dto/create_purchase_order_dto';
-import { PurchaseOrderStatus } from './purchase_order_status';
+import { PurchaseOrder } from '../../entities/purchase.entity';
+import { Supplier } from '../../entities/supplier.entity';
+import { User } from '../../entities/user.entity';
+import { FoodItem } from '../../entities/fooditem.entity';
+import { PurchaseOrderDetail } from '../../entities/purchase_order_detail.entity';
+import { CreatePurchaseOrderDto } from '../../dto/purchase/create_purchase_order_dto';
+import { PurchaseOrderStatus } from '../../constants/purchase_order_status';
 import { identity } from 'rxjs';
-import { UpdatePurchaseOrderDto } from './dto/update_purchase_order_dto';
+import { UpdatePurchaseOrderDto } from '../../dto/purchase/update_purchase_order_dto';
 
 @Injectable()
 export class PurchaseOrderService {

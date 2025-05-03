@@ -3,13 +3,13 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { UserModule } from './user/user.module';
-import { AuthModule } from './auth/auth.module';
-import { CategoryModule } from './category/category.module';
-import { FoodModule } from './food/food.module';
-import { SupplierModule } from './supplier/supplier.module';
-import { PurchaseModule } from './purchase/purchase.module';
-import { PurchaseDetailModule } from './purchase_detail/purchase_detail.module';
+import { UserModule } from './module/user.module';
+import { AuthModule } from './module/auth.module';
+import { CategoryModule } from './module/category.module';
+import { FoodModule } from './module/food.module';
+import { SupplierModule } from './module/supplier.module';
+import { PurchaseModule } from './module/purchase.module';
+import { PurchaseDetailModule } from './module/purchase_detail.module';
 import { dataSourceOption } from '../db/data-source';
 
 @Module({

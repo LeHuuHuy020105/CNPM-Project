@@ -11,7 +11,7 @@ import {
 import { Supplier } from './supplier.entity';
 import { PurchaseOrderDetail } from './purchase_order_detail.entity';
 import { User } from './user.entity';
-import { PurchaseOrderStatus } from 'src/purchase/purchase_order_status';
+import { PurchaseOrderStatus } from 'src/constants/purchase_order_status';
 
 @Entity('purchase_orders')
 export class PurchaseOrder {

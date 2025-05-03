@@ -2,9 +2,9 @@ import { Body, Injectable, Query } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Supplier } from 'src/entities/supplier.entity';
 import { Like, Repository, UpdateResult } from 'typeorm';
-import { CreateSupplierDto } from './dto/create_supplier_dto';
-import { UpdateSupplierDto } from './dto/update_supplier_dto';
-import { FilterSupplierDto } from './dto/filter_supplier_dto';
+import { CreateSupplierDto } from '../../dto/supplier/create_supplier_dto';
+import { UpdateSupplierDto } from '../../dto/supplier/update_supplier_dto';
+import { FilterSupplierDto } from '../../dto/supplier/filter_supplier_dto';
 
 @Injectable()
 export class SupplierService {

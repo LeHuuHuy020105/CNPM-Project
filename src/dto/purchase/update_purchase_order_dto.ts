@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { PurchaseOrderStatus } from '../purchase_order_status';
+import { PurchaseOrderStatus } from '../../constants/purchase_order_status';
 import { IsEnum } from 'class-validator';
 
 export class UpdatePurchaseOrderDto {

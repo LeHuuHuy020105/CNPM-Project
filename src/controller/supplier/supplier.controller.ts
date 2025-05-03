@@ -9,14 +9,14 @@ import {
   Req,
   UseGuards,
 } from '@nestjs/common';
-import { SupplierService } from './supplier.service';
+import { SupplierService } from '../../service/supplier/supplier.service';
 import { ApiQuery } from '@nestjs/swagger';
-import { FilterCategoryDto } from 'src/category/dto/filter_category_dto';
-import { FilterSupplierDto } from './dto/filter_supplier_dto';
-import { UpdateSupplierDto } from './dto/update_supplier_dto';
+import { FilterCategoryDto } from 'src/dto/category/filter_category_dto';
+import { FilterSupplierDto } from '../../dto/supplier/filter_supplier_dto';
+import { UpdateSupplierDto } from '../../dto/supplier/update_supplier_dto';
 import { UpdateResult } from 'typeorm';
 import { AuthGuard } from 'src/auth/auth-guard';
-import { CreateSupplierDto } from './dto/create_supplier_dto';
+import { CreateSupplierDto } from '../../dto/supplier/create_supplier_dto';
 import { Supplier } from 'src/entities/supplier.entity';
 
 @Controller('supplier')

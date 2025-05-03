@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
-import { FoodController } from './food.controller';
-import { FoodService } from './food.service';
+import { FoodController } from '../food/food.controller';
+import { FoodService } from '../food/food.service';
 import { ConfigModule } from '@nestjs/config';
 import { FoodItem } from 'src/entities/fooditem.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';

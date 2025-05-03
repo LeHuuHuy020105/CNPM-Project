@@ -1,6 +1,6 @@
 import { Type } from 'class-transformer';
 import { IsArray, IsInt, Min, ValidateNested } from 'class-validator';
-import { PurchaseOrderDetailDto } from 'src/purchase_detail/dto/create_purchase_order_detail_dto';
+import { PurchaseOrderDetailDto } from 'src/dto/purchase_detail/create_purchase_order_detail_dto';
 
 export class CreatePurchaseOrderDto {
   @IsInt()
