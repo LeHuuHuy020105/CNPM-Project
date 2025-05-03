@@ -9,7 +9,7 @@ import { Category } from 'src/entities/category.entity';
 import { CreateCategoryDto } from './dto/create_category_dto';
 import { DeleteResult, Like, Repository, UpdateResult } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
-import { FoodItem } from 'src/entities/fooditem.entity';
+import { deleteOldImage } from 'helpers/deleteOldImage';
 import { FilterCategoryDto } from './dto/filter_category_dto';
 
 @Injectable()
@@ -19,14 +19,10 @@ export class CategoryService {
     private categoryRepository: Repository<Category>,
   ) {}
 
-  async create(
-    createCategoryDTO: CreateCategoryDto,
-    image: string | null,
-  ): Promise<Category> {
+  async create(createCategoryDTO: CreateCategoryDto): Promise<Category> {
     try {
       const foodItem = this.categoryRepository.create({
         ...createCategoryDTO,
-        image: image ?? undefined, // Chuyển null thành undefined để khớp với entity
       });
       return await this.categoryRepository.save(foodItem);
     } catch (error) {
@@ -84,14 +80,14 @@ export class CategoryService {
     return await this.categoryRepository.update(id, updateCategoryDTO);
   }
 
-  async findFoodItemsByCategoryName(categoryName: string): Promise<FoodItem[]> {
-    const category = await this.categoryRepository.findOne({
-      where: { name: categoryName },
-      relations: ['foodItems'],
-    });
+  async updateImage(id: number, image: string): Promise<UpdateResult> {
+    const category = await this.categoryRepository.findOneBy({ id });
     if (!category) {
-      throw new NotFoundException(`Category ${categoryName} not found`);
+      throw new NotFoundException(`Category with ID ${id} not found`);
     }
-    return category.foodItems;
+    if (image && category.image) {
+      await deleteOldImage(category.image);
+    }
+    return await this.categoryRepository.update(id, { image });
   }
 }

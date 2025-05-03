@@ -30,4 +30,5 @@ export class FilterFoodDto {
   @Min(0)
   @ValidateIf((o) => o.min_price !== undefined)
   max_price?: number;
+
 }

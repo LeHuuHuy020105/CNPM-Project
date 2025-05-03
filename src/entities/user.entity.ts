@@ -4,7 +4,9 @@ import {
   PrimaryGeneratedColumn,
   CreateDateColumn,
   UpdateDateColumn,
+  OneToMany,
 } from 'typeorm';
+import { PurchaseOrder } from './purchase.entity';
 
 @Entity()
 export class User {
@@ -40,4 +42,7 @@ export class User {
 
   @UpdateDateColumn()
   created_update: Date;
+
+  @OneToMany(() => PurchaseOrder, (purchase) => purchase.user)
+  purchases: PurchaseOrder[];
 }

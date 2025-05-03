@@ -8,6 +8,10 @@ import { UserModule } from './user/user.module';
 import { ConfigModule } from '@nestjs/config';
 import { CategoryModule } from './category/category.module';
 import { FoodModule } from './food/food.module';
+import { SupplierModule } from './supplier/supplier.module';
+import { PurchaseController } from './purchase/purchase.controller';
+import { PurchaseService } from './purchase/purchase.service';
+import { PurchaseModule } from './purchase/purchase.module';
 
 @Module({
   imports: [
@@ -17,8 +21,10 @@ import { FoodModule } from './food/food.module';
     ConfigModule.forRoot(),
     CategoryModule,
     FoodModule,
+    SupplierModule,
+    PurchaseModule,
   ],
-  controllers: [AppController],
-  providers: [AppService],
+  controllers: [AppController, PurchaseController],
+  providers: [AppService, PurchaseService],
 })
 export class AppModule {}

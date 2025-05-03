@@ -13,10 +13,10 @@ export class Supplier {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
+  @Column({ nullable: true }) // Cho phép null
   name: string;
 
-  @Column()
+  @Column({ nullable: true })
   description: string;
 
   @Column({ default: 1 })

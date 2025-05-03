@@ -24,6 +24,7 @@ import { FilterCategoryDto } from './dto/filter_category_dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { storageConfig } from 'helpers/config';
 import { extname } from 'path';
+import { UpdateResult } from 'typeorm';
 
 @Controller('category')
 export class CategoryController {
@@ -42,9 +43,33 @@ export class CategoryController {
 
   @Post()
   @UseGuards(AuthGuard)
+  create(
+    @Req() req: any,
+    @Body() createCategoryDto: CreateCategoryDto,
+  ): Promise<Category> {
+    return this.categoryService.create(createCategoryDto);
+  }
+
+  @Put(':id')
+  @UseGuards(AuthGuard)
+  update(
+    @Param('id') id: string,
+    @Body() updateCategoryDTO: UpdateCategoryDto,
+  ) {
+    return this.categoryService.update(Number(id), updateCategoryDTO);
+  }
+
+  @Delete(':id')
+  @UseGuards(AuthGuard)
+  delete(@Param('id') id: string) {
+    return this.categoryService.delete(Number(id));
+  }
+
+  @Post(':categoryId/upload-image-category')
+  @UseGuards(AuthGuard)
   @UseInterceptors(
-    FileInterceptor('imageFood', {
-      storage: storageConfig('FoodImage'),
+    FileInterceptor('image-category', {
+      storage: storageConfig('category'),
       fileFilter: (req, file, cb) => {
         const ext = extname(file.originalname);
         const allowedExtArr = ['.jpg', '.png', '.jpeg'];
@@ -61,13 +86,15 @@ export class CategoryController {
         }
       },
     }),
-  )
-  create(
-    @Req() req: any,
-    @Body() createCategoryDto: CreateCategoryDto,
+  ) // trung voi field name khi fontend truyen len
+  uploadAvatar(
+    @Param('categoryId') categoryID: string,
+    @Req()
+    req: any,
     @UploadedFile() file: Express.Multer.File,
-  ): Promise<Category> {
-    console.log(createCategoryDto);
+  ): Promise<UpdateResult> {
+    console.log('upload image category');
+    console.log('user data ', req.user_data);
     console.log(file);
     if (req.fileValidationError) {
       throw new BadRequestException(req.fileValidationError);
@@ -75,24 +102,9 @@ export class CategoryController {
     if (!file) {
       throw new BadRequestException('File is required');
     }
-    return this.categoryService.create(
-      createCategoryDto,
+    return this.categoryService.updateImage(
+      Number(categoryID),
       file.destination + '/' + file.filename,
     );
-  }
-
-  @Put(':id')
-  @UseGuards(AuthGuard)
-  update(
-    @Param('id') id: string,
-    @Body() updateCategoryDTO: UpdateCategoryDto,
-  ) {
-    return this.categoryService.update(Number(id), updateCategoryDTO);
-  }
-
-  @Delete(':id')
-  @UseGuards(AuthGuard)
-  delete(@Param('id') id: string) {
-    return this.categoryService.delete(Number(id));
   }
 }

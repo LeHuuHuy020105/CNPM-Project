@@ -6,11 +6,12 @@ import {
   Query,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Like, Repository } from 'typeorm';
+import { DeleteResult, Like, Repository, UpdateResult } from 'typeorm';
 import { FoodItem } from 'src/entities/fooditem.entity';
 import { Category } from '../entities/category.entity';
 import { CreateFoodDto } from './dto/create_food_dto';
 import { FilterFoodDto } from './dto/filter_food_dto';
+import { deleteOldImage } from 'helpers/deleteOldImage';
 
 @Injectable()
 export class FoodService {
@@ -21,10 +22,7 @@ export class FoodService {
     private categoryRepository: Repository<Category>,
   ) {}
 
-  async create(
-    createFoodDto: CreateFoodDto,
-    image: string | null,
-  ): Promise<FoodItem> {
+  async create(createFoodDto: CreateFoodDto): Promise<FoodItem> {
     const category = await this.categoryRepository.findOneBy({
       id: createFoodDto.categoryId,
     });
@@ -37,7 +35,6 @@ export class FoodService {
     try {
       const foodItem = this.foodItemRepository.create({
         ...createFoodDto,
-        image: image ?? undefined, // Chuyển null thành undefined để khớp với entity
         category, // Gán mối quan hệ
       });
       return await this.foodItemRepository.save(foodItem);
@@ -124,5 +121,24 @@ export class FoodService {
       prevPage,
       lastPage,
     };
+  }
+
+  async delete(id: number): Promise<DeleteResult> {
+    return await this.foodItemRepository.delete(id);
+  }
+
+  async findById(id: number): Promise<any> {
+    return await this.foodItemRepository.findOneBy({ id });
+  }
+
+  async updateImage(id: number, image: string): Promise<UpdateResult> {
+    const foodItem = await this.foodItemRepository.findOneBy({ id });
+    if (!foodItem) {
+      throw new NotFoundException(`foodItem with ID ${id} not found`);
+    }
+    if (image && foodItem.image) {
+      await deleteOldImage(foodItem.image);
+    }
+    return await this.categoryRepository.update(id, { image });
   }
 }
