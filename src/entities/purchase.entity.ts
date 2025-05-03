@@ -3,24 +3,29 @@ import {
   Column,
   PrimaryGeneratedColumn,
   CreateDateColumn,
+  UpdateDateColumn,
   ManyToOne,
   OneToMany,
   JoinColumn,
-  UpdateDateColumn,
 } from 'typeorm';
 import { Supplier } from './supplier.entity';
 import { PurchaseOrderDetail } from './purchase_order_detail.entity';
 import { User } from './user.entity';
+import { PurchaseOrderStatus } from 'src/purchase/purchase_order_status';
 
 @Entity('purchase_orders')
 export class PurchaseOrder {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ default: 'Chờ xử lí' })
-  status: string;
+  @Column({
+    type: 'enum',
+    enum: PurchaseOrderStatus,
+    default: PurchaseOrderStatus.PENDING,
+  })
+  status: PurchaseOrderStatus;
 
-  @ManyToOne(() => Supplier, (supplier) => supplier.purchaseOrders) // Sửa thành purchaseOrders
+  @ManyToOne(() => Supplier, (supplier) => supplier.purchaseOrders)
   @JoinColumn({ name: 'supplier_id' })
   supplier: Supplier;
 
@@ -28,14 +33,15 @@ export class PurchaseOrder {
     () => PurchaseOrderDetail,
     (detailPurchase) => detailPurchase.purchaseOrder,
   )
-  purchaseOrderDetails: PurchaseOrderDetail[]; // Sửa tên thuộc tính
+  purchaseOrderDetails: PurchaseOrderDetail[];
 
   @CreateDateColumn()
   created_at: Date;
 
   @UpdateDateColumn()
-  created_update: Date;
+  updated_at: Date;
 
   @ManyToOne(() => User, (user) => user.purchases)
+  @JoinColumn({ name: 'user_id' })
   user: User;
 }

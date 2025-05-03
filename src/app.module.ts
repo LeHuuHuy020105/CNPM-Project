@@ -1,30 +1,30 @@
 import { Module } from '@nestjs/common';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { ConfigModule } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { dataSourceOption } from 'db/data-source';
-import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
-import { ConfigModule } from '@nestjs/config';
+import { AuthModule } from './auth/auth.module';
 import { CategoryModule } from './category/category.module';
 import { FoodModule } from './food/food.module';
 import { SupplierModule } from './supplier/supplier.module';
-import { PurchaseController } from './purchase/purchase.controller';
-import { PurchaseService } from './purchase/purchase.service';
 import { PurchaseModule } from './purchase/purchase.module';
+import { PurchaseDetailModule } from './purchase_detail/purchase_detail.module';
+import { dataSourceOption } from '../db/data-source';
 
 @Module({
   imports: [
+    ConfigModule.forRoot(),
     TypeOrmModule.forRoot(dataSourceOption),
     UserModule,
     AuthModule,
-    ConfigModule.forRoot(),
     CategoryModule,
     FoodModule,
     SupplierModule,
     PurchaseModule,
+    PurchaseDetailModule,
   ],
-  controllers: [AppController, PurchaseController],
-  providers: [AppService, PurchaseService],
+  controllers: [AppController],
+  providers: [AppService],
 })
 export class AppModule {}
