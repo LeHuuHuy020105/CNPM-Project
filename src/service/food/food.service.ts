@@ -8,9 +8,9 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { DeleteResult, Like, Repository, UpdateResult } from 'typeorm';
 import { FoodItem } from 'src/entities/fooditem.entity';
-import { Category } from '../entities/category.entity';
-import { CreateFoodDto } from './dto/create_food_dto';
-import { FilterFoodDto } from './dto/filter_food_dto';
+import { Category } from 'src/entities/category.entity';
+import { CreateFoodDto } from 'src/dto/food/create_food_dto';
+import { FilterFoodDto } from 'src/dto/food/filter_food_dto';
 import { deleteOldImage } from 'helpers/deleteOldImage';
 
 @Injectable()

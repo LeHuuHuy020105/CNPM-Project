@@ -9,6 +9,7 @@ import {
   Put,
   Query,
   Req,
+  SetMetadata,
   UploadedFile,
   UseGuards,
   UseInterceptors,
@@ -31,6 +32,7 @@ export class UserController {
 
   @Get()
   @UseGuards(AuthGuard)
+  @SetMetadata('roles', ['Admin'])
   @ApiQuery({ name: 'page', required: false })
   @ApiQuery({ name: 'items_per_page', required: false })
   @ApiQuery({ name: 'search', required: false })
