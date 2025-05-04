@@ -1,27 +1,24 @@
 import { MigrationInterface, QueryRunner } from "typeorm";
 
-export class CreateBillOrderEntity1746333511888 implements MigrationInterface {
-    name = 'CreateBillOrderEntity1746333511888'
+export class Run1746346065152 implements MigrationInterface {
+    name = 'Run1746346065152'
 
     public async up(queryRunner: QueryRunner): Promise<void> {
-        await queryRunner.query(`CREATE TABLE \`order_details\` (\`id\` int NOT NULL AUTO_INCREMENT, \`quantity\` int NOT NULL, \`orderId\` int NULL, \`foodItemId\` int NULL, PRIMARY KEY (\`id\`)) ENGINE=InnoDB`);
-        await queryRunner.query(`CREATE TABLE \`bills\` (\`id\` int NOT NULL AUTO_INCREMENT, \`totalPrice\` decimal(10,2) NOT NULL, \`status\` enum ('UNPAID', 'PAID') NOT NULL DEFAULT 'UNPAID', \`paymentMethod\` enum ('CASH', 'BANK_TRANSFER') NULL, \`created_at\` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6), \`updated_at\` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6), \`table_id\` int NULL, PRIMARY KEY (\`id\`)) ENGINE=InnoDB`);
-        await queryRunner.query(`CREATE TABLE \`orders\` (\`id\` int NOT NULL AUTO_INCREMENT, \`nameCustomer\` varchar(255) NULL, \`phoneCustomer\` varchar(255) NULL, \`type\` enum ('DINE_IN', 'TAKE_AWAY') NOT NULL, \`status\` enum ('PLACED', 'PREPARING', 'SERVED', 'COMPLETED', 'CANCELLED') NOT NULL DEFAULT 'PLACED', \`totalPrice\` decimal(10,2) NOT NULL, \`created_at\` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6), \`updated_at\` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6), \`table_id\` int NULL, PRIMARY KEY (\`id\`)) ENGINE=InnoDB`);
-        await queryRunner.query(`CREATE TABLE \`tables\` (\`id\` int NOT NULL AUTO_INCREMENT, \`number\` varchar(255) NOT NULL, \`status\` enum ('EMPTY', 'OCCUPIED', 'RESERVED') NOT NULL DEFAULT 'EMPTY', \`qr_code\` varchar(255) NULL, \`created_at\` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6), \`updated_at\` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6), UNIQUE INDEX \`IDX_0aa8f1290718849823b581ec14\` (\`number\`), PRIMARY KEY (\`id\`)) ENGINE=InnoDB`);
-        await queryRunner.query(`CREATE TABLE \`bill_orders\` (\`bill_id\` int NOT NULL, \`order_id\` int NOT NULL, INDEX \`IDX_d88416c40daa80bea8580e7c46\` (\`bill_id\`), INDEX \`IDX_e106f7e97d920a415c81394070\` (\`order_id\`), PRIMARY KEY (\`bill_id\`, \`order_id\`)) ENGINE=InnoDB`);
+        await queryRunner.query(`DROP INDEX \`FK_bf31353b77c5507183f82b7a28a\` ON \`food_items\``);
+        await queryRunner.query(`DROP INDEX \`FK_08f0d16ed60b199a4973097255d\` ON \`purchase_order_details\``);
+        await queryRunner.query(`DROP INDEX \`FK_d3b4369887dd815c0b52023ddca\` ON \`purchase_order_details\``);
+        await queryRunner.query(`DROP INDEX \`FK_d16a885aa88447ccfd010e739b0\` ON \`purchase_orders\``);
+        await queryRunner.query(`DROP INDEX \`FK_c13036093717212c2c6aa111c73\` ON \`purchase_orders\``);
+        await queryRunner.query(`DROP INDEX \`IDX_0aa8f1290718849823b581ec14\` ON \`tables\``);
+        await queryRunner.query(`ALTER TABLE \`tables\` CHANGE \`number\` \`capcity\` varchar(255) NOT NULL`);
         await queryRunner.query(`ALTER TABLE \`suppliers\` CHANGE \`name\` \`name\` varchar(255) NULL`);
         await queryRunner.query(`ALTER TABLE \`suppliers\` CHANGE \`description\` \`description\` varchar(255) NULL`);
         await queryRunner.query(`ALTER TABLE \`categories\` CHANGE \`description\` \`description\` text NULL`);
         await queryRunner.query(`ALTER TABLE \`categories\` CHANGE \`image\` \`image\` varchar(255) NULL`);
-        await queryRunner.query(`ALTER TABLE \`food_items\` DROP FOREIGN KEY \`FK_bf31353b77c5507183f82b7a28a\``);
         await queryRunner.query(`ALTER TABLE \`food_items\` CHANGE \`image\` \`image\` varchar(255) NULL`);
         await queryRunner.query(`ALTER TABLE \`food_items\` CHANGE \`category_id\` \`category_id\` int NULL`);
-        await queryRunner.query(`ALTER TABLE \`purchase_order_details\` DROP FOREIGN KEY \`FK_08f0d16ed60b199a4973097255d\``);
-        await queryRunner.query(`ALTER TABLE \`purchase_order_details\` DROP FOREIGN KEY \`FK_d3b4369887dd815c0b52023ddca\``);
         await queryRunner.query(`ALTER TABLE \`purchase_order_details\` CHANGE \`purchase_order_id\` \`purchase_order_id\` int NULL`);
         await queryRunner.query(`ALTER TABLE \`purchase_order_details\` CHANGE \`product_id\` \`product_id\` int NULL`);
-        await queryRunner.query(`ALTER TABLE \`purchase_orders\` DROP FOREIGN KEY \`FK_d16a885aa88447ccfd010e739b0\``);
-        await queryRunner.query(`ALTER TABLE \`purchase_orders\` DROP FOREIGN KEY \`FK_c13036093717212c2c6aa111c73\``);
         await queryRunner.query(`ALTER TABLE \`purchase_orders\` CHANGE \`supplier_id\` \`supplier_id\` int NULL`);
         await queryRunner.query(`ALTER TABLE \`purchase_orders\` CHANGE \`user_id\` \`user_id\` int NULL`);
         await queryRunner.query(`ALTER TABLE \`user\` ADD UNIQUE INDEX \`IDX_e12875dfb3b1d92d7d7c5377e2\` (\`email\`)`);
@@ -29,6 +26,16 @@ export class CreateBillOrderEntity1746333511888 implements MigrationInterface {
         await queryRunner.query(`ALTER TABLE \`user\` ADD \`roles\` varchar(255) NOT NULL DEFAULT 'User'`);
         await queryRunner.query(`ALTER TABLE \`user\` CHANGE \`refresh_token\` \`refresh_token\` varchar(255) NULL`);
         await queryRunner.query(`ALTER TABLE \`user\` CHANGE \`avatar\` \`avatar\` varchar(255) NULL`);
+        await queryRunner.query(`ALTER TABLE \`order_details\` CHANGE \`orderId\` \`orderId\` int NULL`);
+        await queryRunner.query(`ALTER TABLE \`order_details\` CHANGE \`foodItemId\` \`foodItemId\` int NULL`);
+        await queryRunner.query(`ALTER TABLE \`bills\` CHANGE \`paymentMethod\` \`paymentMethod\` enum ('CASH', 'BANK_TRANSFER') NULL`);
+        await queryRunner.query(`ALTER TABLE \`bills\` CHANGE \`table_id\` \`table_id\` int NULL`);
+        await queryRunner.query(`ALTER TABLE \`orders\` CHANGE \`nameCustomer\` \`nameCustomer\` varchar(255) NULL`);
+        await queryRunner.query(`ALTER TABLE \`orders\` CHANGE \`phoneCustomer\` \`phoneCustomer\` varchar(255) NULL`);
+        await queryRunner.query(`ALTER TABLE \`orders\` CHANGE \`table_id\` \`table_id\` int NULL`);
+        await queryRunner.query(`ALTER TABLE \`tables\` DROP COLUMN \`capcity\``);
+        await queryRunner.query(`ALTER TABLE \`tables\` ADD \`capcity\` int NOT NULL`);
+        await queryRunner.query(`ALTER TABLE \`tables\` CHANGE \`qr_code\` \`qr_code\` varchar(255) NULL`);
         await queryRunner.query(`ALTER TABLE \`food_items\` ADD CONSTRAINT \`FK_bf31353b77c5507183f82b7a28a\` FOREIGN KEY (\`category_id\`) REFERENCES \`categories\`(\`id\`) ON DELETE NO ACTION ON UPDATE NO ACTION`);
         await queryRunner.query(`ALTER TABLE \`purchase_order_details\` ADD CONSTRAINT \`FK_08f0d16ed60b199a4973097255d\` FOREIGN KEY (\`purchase_order_id\`) REFERENCES \`purchase_orders\`(\`id\`) ON DELETE NO ACTION ON UPDATE NO ACTION`);
         await queryRunner.query(`ALTER TABLE \`purchase_order_details\` ADD CONSTRAINT \`FK_d3b4369887dd815c0b52023ddca\` FOREIGN KEY (\`product_id\`) REFERENCES \`food_items\`(\`id\`) ON DELETE NO ACTION ON UPDATE NO ACTION`);
@@ -54,6 +61,16 @@ export class CreateBillOrderEntity1746333511888 implements MigrationInterface {
         await queryRunner.query(`ALTER TABLE \`purchase_order_details\` DROP FOREIGN KEY \`FK_d3b4369887dd815c0b52023ddca\``);
         await queryRunner.query(`ALTER TABLE \`purchase_order_details\` DROP FOREIGN KEY \`FK_08f0d16ed60b199a4973097255d\``);
         await queryRunner.query(`ALTER TABLE \`food_items\` DROP FOREIGN KEY \`FK_bf31353b77c5507183f82b7a28a\``);
+        await queryRunner.query(`ALTER TABLE \`tables\` CHANGE \`qr_code\` \`qr_code\` varchar(255) NULL DEFAULT 'NULL'`);
+        await queryRunner.query(`ALTER TABLE \`tables\` DROP COLUMN \`capcity\``);
+        await queryRunner.query(`ALTER TABLE \`tables\` ADD \`capcity\` varchar(255) NOT NULL`);
+        await queryRunner.query(`ALTER TABLE \`orders\` CHANGE \`table_id\` \`table_id\` int NULL DEFAULT 'NULL'`);
+        await queryRunner.query(`ALTER TABLE \`orders\` CHANGE \`phoneCustomer\` \`phoneCustomer\` varchar(255) NULL DEFAULT 'NULL'`);
+        await queryRunner.query(`ALTER TABLE \`orders\` CHANGE \`nameCustomer\` \`nameCustomer\` varchar(255) NULL DEFAULT 'NULL'`);
+        await queryRunner.query(`ALTER TABLE \`bills\` CHANGE \`table_id\` \`table_id\` int NULL DEFAULT 'NULL'`);
+        await queryRunner.query(`ALTER TABLE \`bills\` CHANGE \`paymentMethod\` \`paymentMethod\` enum ('CASH', 'BANK_TRANSFER') NULL DEFAULT 'NULL'`);
+        await queryRunner.query(`ALTER TABLE \`order_details\` CHANGE \`foodItemId\` \`foodItemId\` int NULL DEFAULT 'NULL'`);
+        await queryRunner.query(`ALTER TABLE \`order_details\` CHANGE \`orderId\` \`orderId\` int NULL DEFAULT 'NULL'`);
         await queryRunner.query(`ALTER TABLE \`user\` CHANGE \`avatar\` \`avatar\` varchar(255) NULL DEFAULT 'NULL'`);
         await queryRunner.query(`ALTER TABLE \`user\` CHANGE \`refresh_token\` \`refresh_token\` varchar(255) NULL DEFAULT 'NULL'`);
         await queryRunner.query(`ALTER TABLE \`user\` DROP COLUMN \`roles\``);
@@ -61,27 +78,21 @@ export class CreateBillOrderEntity1746333511888 implements MigrationInterface {
         await queryRunner.query(`ALTER TABLE \`user\` DROP INDEX \`IDX_e12875dfb3b1d92d7d7c5377e2\``);
         await queryRunner.query(`ALTER TABLE \`purchase_orders\` CHANGE \`user_id\` \`user_id\` int NULL DEFAULT 'NULL'`);
         await queryRunner.query(`ALTER TABLE \`purchase_orders\` CHANGE \`supplier_id\` \`supplier_id\` int NULL DEFAULT 'NULL'`);
-        await queryRunner.query(`ALTER TABLE \`purchase_orders\` ADD CONSTRAINT \`FK_c13036093717212c2c6aa111c73\` FOREIGN KEY (\`user_id\`) REFERENCES \`user\`(\`id\`) ON DELETE NO ACTION ON UPDATE NO ACTION`);
-        await queryRunner.query(`ALTER TABLE \`purchase_orders\` ADD CONSTRAINT \`FK_d16a885aa88447ccfd010e739b0\` FOREIGN KEY (\`supplier_id\`) REFERENCES \`suppliers\`(\`id\`) ON DELETE NO ACTION ON UPDATE NO ACTION`);
         await queryRunner.query(`ALTER TABLE \`purchase_order_details\` CHANGE \`product_id\` \`product_id\` int NULL DEFAULT 'NULL'`);
         await queryRunner.query(`ALTER TABLE \`purchase_order_details\` CHANGE \`purchase_order_id\` \`purchase_order_id\` int NULL DEFAULT 'NULL'`);
-        await queryRunner.query(`ALTER TABLE \`purchase_order_details\` ADD CONSTRAINT \`FK_d3b4369887dd815c0b52023ddca\` FOREIGN KEY (\`product_id\`) REFERENCES \`food_items\`(\`id\`) ON DELETE NO ACTION ON UPDATE NO ACTION`);
-        await queryRunner.query(`ALTER TABLE \`purchase_order_details\` ADD CONSTRAINT \`FK_08f0d16ed60b199a4973097255d\` FOREIGN KEY (\`purchase_order_id\`) REFERENCES \`purchase_orders\`(\`id\`) ON DELETE NO ACTION ON UPDATE NO ACTION`);
         await queryRunner.query(`ALTER TABLE \`food_items\` CHANGE \`category_id\` \`category_id\` int NULL DEFAULT 'NULL'`);
         await queryRunner.query(`ALTER TABLE \`food_items\` CHANGE \`image\` \`image\` varchar(255) NULL DEFAULT 'NULL'`);
-        await queryRunner.query(`ALTER TABLE \`food_items\` ADD CONSTRAINT \`FK_bf31353b77c5507183f82b7a28a\` FOREIGN KEY (\`category_id\`) REFERENCES \`categories\`(\`id\`) ON DELETE NO ACTION ON UPDATE NO ACTION`);
         await queryRunner.query(`ALTER TABLE \`categories\` CHANGE \`image\` \`image\` varchar(255) NULL DEFAULT 'NULL'`);
         await queryRunner.query(`ALTER TABLE \`categories\` CHANGE \`description\` \`description\` text NULL DEFAULT 'NULL'`);
         await queryRunner.query(`ALTER TABLE \`suppliers\` CHANGE \`description\` \`description\` varchar(255) NULL DEFAULT 'NULL'`);
         await queryRunner.query(`ALTER TABLE \`suppliers\` CHANGE \`name\` \`name\` varchar(255) NULL DEFAULT 'NULL'`);
-        await queryRunner.query(`DROP INDEX \`IDX_e106f7e97d920a415c81394070\` ON \`bill_orders\``);
-        await queryRunner.query(`DROP INDEX \`IDX_d88416c40daa80bea8580e7c46\` ON \`bill_orders\``);
-        await queryRunner.query(`DROP TABLE \`bill_orders\``);
-        await queryRunner.query(`DROP INDEX \`IDX_0aa8f1290718849823b581ec14\` ON \`tables\``);
-        await queryRunner.query(`DROP TABLE \`tables\``);
-        await queryRunner.query(`DROP TABLE \`orders\``);
-        await queryRunner.query(`DROP TABLE \`bills\``);
-        await queryRunner.query(`DROP TABLE \`order_details\``);
+        await queryRunner.query(`ALTER TABLE \`tables\` CHANGE \`capcity\` \`number\` varchar(255) NOT NULL`);
+        await queryRunner.query(`CREATE UNIQUE INDEX \`IDX_0aa8f1290718849823b581ec14\` ON \`tables\` (\`number\`)`);
+        await queryRunner.query(`CREATE INDEX \`FK_c13036093717212c2c6aa111c73\` ON \`purchase_orders\` (\`user_id\`)`);
+        await queryRunner.query(`CREATE INDEX \`FK_d16a885aa88447ccfd010e739b0\` ON \`purchase_orders\` (\`supplier_id\`)`);
+        await queryRunner.query(`CREATE INDEX \`FK_d3b4369887dd815c0b52023ddca\` ON \`purchase_order_details\` (\`product_id\`)`);
+        await queryRunner.query(`CREATE INDEX \`FK_08f0d16ed60b199a4973097255d\` ON \`purchase_order_details\` (\`purchase_order_id\`)`);
+        await queryRunner.query(`CREATE INDEX \`FK_bf31353b77c5507183f82b7a28a\` ON \`food_items\` (\`category_id\`)`);
     }
 
 }

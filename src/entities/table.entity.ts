@@ -15,8 +15,8 @@ export class Table {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ unique: true })
-  number: string;
+  @Column()
+  capcity: number;
 
   @Column({
     type: 'enum',

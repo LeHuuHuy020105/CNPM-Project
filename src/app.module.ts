@@ -15,6 +15,7 @@ import { APP_GUARD } from '@nestjs/core';
 import { RolesGuard } from './auth/role.guard';
 import { AuthGuard } from './auth/auth-guard';
 import { User } from './entities/user.entity';
+import { QrCodeController } from './controller/qr_code/qr_code.controller';
 
 @Module({
   imports: [
@@ -29,7 +30,7 @@ import { User } from './entities/user.entity';
     PurchaseDetailModule,
     TypeOrmModule.forFeature([User]),
   ],
-  controllers: [AppController],
+  controllers: [AppController, QrCodeController],
   providers: [
     AppService,
     {

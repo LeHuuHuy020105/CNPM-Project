@@ -107,3 +107,4 @@ npm i -D @types/multer
 npm i path
 npm install class-validator class-transformer
 npm install @nestjs/core
+npm install qrcode
