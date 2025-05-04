@@ -6,13 +6,10 @@ import { FoodItem } from 'src/entities/fooditem.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { CategoryService } from 'src/service/category/category.service';
 import { Category } from 'src/entities/category.entity';
+import { User } from 'src/entities/user.entity';
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([FoodItem]),
-    TypeOrmModule.forFeature([Category]),
-    ConfigModule,
-  ],
+  imports: [TypeOrmModule.forFeature([FoodItem, Category, User]), ConfigModule],
   controllers: [FoodController],
   providers: [FoodService, CategoryService],
 })

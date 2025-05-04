@@ -7,7 +7,6 @@ import {
   OneToMany,
 } from 'typeorm';
 import { PurchaseOrder } from './purchase.entity';
-import { Role } from 'src/constants/role';
 
 @Entity()
 export class User {
@@ -23,17 +22,13 @@ export class User {
   @Column()
   password: string;
 
-  @Column()
+  @Column({ unique: true })
   email: string;
 
   @Column()
   phone: string;
 
-  @Column({
-    type: 'enum',
-    enum: Role,
-    default: Role.USER,
-  })
+  @Column({ default: 'User' })
   roles: string;
 
   @Column({ nullable: true, default: null })

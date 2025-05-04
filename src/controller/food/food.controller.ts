@@ -8,6 +8,7 @@ import {
   Post,
   Query,
   Req,
+  SetMetadata,
   UploadedFile,
   UseGuards,
   UseInterceptors,
@@ -23,17 +24,20 @@ import { FilterFoodDto } from 'src/dto/food/filter_food_dto';
 import { ApiQuery } from '@nestjs/swagger';
 import { FoodItem } from 'src/entities/fooditem.entity';
 import { DeleteResult, UpdateResult } from 'typeorm';
+import { Roles } from 'src/auth/decorator/roles.decorator';
+import { Public } from 'src/auth/decorator/public.decorator';
 
 @Controller('food')
 export class FoodController {
   constructor(private foodService: FoodService) {}
   @Post()
-  @UseGuards(AuthGuard)
+  @Roles('Admin')
   create(@Body() createFoodDto: CreateFoodDto): Promise<FoodItem> {
     return this.foodService.create(createFoodDto);
   }
 
   @Get()
+  @Public()
   @ApiQuery({ name: 'page', required: false })
   @ApiQuery({ name: 'items_per_page', required: false })
   @ApiQuery({ name: 'search', required: false })
@@ -54,19 +58,18 @@ export class FoodController {
   }
 
   @Delete(':id')
-  @UseGuards(AuthGuard)
+  @Roles('Admin')
   delete(@Param('id') id: string): Promise<DeleteResult> {
     return this.foodService.delete(Number(id));
   }
 
   @Get(':id')
-  @UseGuards(AuthGuard)
+  @Public()
   getFoodByID(@Param('id') id: string): Promise<any> {
     return this.foodService.findById(Number(id));
   }
 
   @Post(':foodID/upload-image-food')
-  @UseGuards(AuthGuard)
   @UseInterceptors(
     FileInterceptor('imageFood', {
       storage: storageConfig('FoodImage'),

@@ -24,6 +24,7 @@ import { ApiBearerAuth, ApiQuery } from '@nestjs/swagger';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { storageConfig } from 'helpers/config';
 import { extname } from 'path';
+import { Roles } from 'src/auth/decorator/roles.decorator';
 
 @ApiBearerAuth()
 @Controller('users')
@@ -31,8 +32,7 @@ export class UserController {
   constructor(private userService: UserService) {}
 
   @Get()
-  @UseGuards(AuthGuard)
-  @SetMetadata('roles', ['Admin'])
+  @Roles('Admin')
   @ApiQuery({ name: 'page', required: false })
   @ApiQuery({ name: 'items_per_page', required: false })
   @ApiQuery({ name: 'search', required: false })
@@ -47,31 +47,29 @@ export class UserController {
   }
 
   @Get(':id')
-  @UseGuards(AuthGuard)
   getUserById(@Param('id') id: string): Promise<any> {
     return this.userService.findUserById(Number(id));
   }
 
   @Post()
-  @UseGuards(AuthGuard)
+  @Roles('Admin')
   create(@Body() createUserDto: CreateUserDto): Promise<User> {
     return this.userService.create(createUserDto);
   }
 
   @Put(':id')
-  @UseGuards(AuthGuard)
+  @Roles('Admin')
   update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
     return this.userService.update(Number(id), updateUserDto);
   }
 
   @Delete(':id')
-  @UseGuards(AuthGuard)
+  @Roles('Admin')
   delete(@Param('id') id: string) {
     return this.userService.delete(Number(id));
   }
 
   @Post('upload-avatar')
-  @UseGuards(AuthGuard)
   @UseInterceptors(
     FileInterceptor('avatar', {
       storage: storageConfig('avatar'),

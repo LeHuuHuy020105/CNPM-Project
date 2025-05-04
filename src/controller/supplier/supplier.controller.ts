@@ -18,12 +18,14 @@ import { UpdateResult } from 'typeorm';
 import { AuthGuard } from 'src/auth/auth-guard';
 import { CreateSupplierDto } from '../../dto/supplier/create_supplier_dto';
 import { Supplier } from 'src/entities/supplier.entity';
+import { Roles } from 'src/auth/decorator/roles.decorator';
 
 @Controller('supplier')
 export class SupplierController {
   constructor(private supplierService: SupplierService) {}
 
   @Get()
+  @Roles('Admin')
   @ApiQuery({ name: 'page', required: false })
   @ApiQuery({ name: 'items_per_page', required: false })
   @ApiQuery({ name: 'search', required: false })
@@ -37,7 +39,7 @@ export class SupplierController {
   }
 
   @Put(':id')
-  @UseGuards(AuthGuard)
+  @Roles('Admin')
   update(
     @Param('id') id: string,
     updateSupplierDto: UpdateSupplierDto,
@@ -46,13 +48,13 @@ export class SupplierController {
   }
 
   @Get(':id')
-  @UseGuards(AuthGuard)
+  @Roles('Admin')
   findById(@Param('id') id: string): Promise<any> {
     return this.supplierService.findById(Number(id));
   }
 
   @Post()
-  @UseGuards(AuthGuard)
+  @Roles('Admin')
   create(
     @Req() req: any,
     @Body() createSupplierDto: CreateSupplierDto,

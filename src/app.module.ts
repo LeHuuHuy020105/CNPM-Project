@@ -13,6 +13,8 @@ import { PurchaseDetailModule } from './module/purchase_detail.module';
 import { dataSourceOption } from '../db/data-source';
 import { APP_GUARD } from '@nestjs/core';
 import { RolesGuard } from './auth/role.guard';
+import { AuthGuard } from './auth/auth-guard';
+import { User } from './entities/user.entity';
 
 @Module({
   imports: [
@@ -25,10 +27,15 @@ import { RolesGuard } from './auth/role.guard';
     SupplierModule,
     PurchaseModule,
     PurchaseDetailModule,
+    TypeOrmModule.forFeature([User]),
   ],
   controllers: [AppController],
   providers: [
     AppService,
+    {
+      provide: APP_GUARD,
+      useClass: AuthGuard,
+    },
     {
       provide: APP_GUARD,
       useClass: RolesGuard,

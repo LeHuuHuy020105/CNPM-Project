@@ -15,13 +15,15 @@ import { PurchaseOrder } from 'src/entities/purchase.entity';
 import { AuthGuard } from 'src/auth/auth-guard';
 import { UpdatePurchaseOrderDto } from '../../dto/purchase/update_purchase_order_dto';
 import { DeleteResult, UpdateResult } from 'typeorm';
+import { Public } from 'src/auth/decorator/public.decorator';
+import { Roles } from 'src/auth/decorator/roles.decorator';
 
 @Controller('purchase')
 export class PurchaseController {
   constructor(private purchaseOrderService: PurchaseOrderService) {}
 
   @Post()
-  @UseGuards(AuthGuard)
+  @Public()
   create(
     @Req() req: any,
     @Body() createPurchaseOrderDto: CreatePurchaseOrderDto,
@@ -33,6 +35,7 @@ export class PurchaseController {
   }
 
   @Put(':id')
+  @Roles('Admin', 'User')
   update(
     @Param('id') id: string,
     @Body() updatePurchaseOrderDto: UpdatePurchaseOrderDto,
@@ -41,11 +44,13 @@ export class PurchaseController {
   }
 
   @Delete(':id')
+  @Roles('Admin', 'User')
   delete(@Param('id') id: string): Promise<DeleteResult> {
     return this.purchaseOrderService.delete(Number(id));
   }
 
   @Get(':id')
+  @Public()
   findById(@Param('id') id: string): Promise<any> {
     return this.purchaseOrderService.findById(Number(id));
   }

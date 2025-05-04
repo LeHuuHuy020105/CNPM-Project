@@ -25,11 +25,14 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { storageConfig } from 'helpers/config';
 import { extname } from 'path';
 import { UpdateResult } from 'typeorm';
+import { Roles } from 'src/auth/decorator/roles.decorator';
+import { Public } from 'src/auth/decorator/public.decorator';
 
 @Controller('category')
 export class CategoryController {
   constructor(private categoryService: CategoryService) {}
   @Get()
+  @Public()
   @ApiQuery({ name: 'page', required: false })
   @ApiQuery({ name: 'items_per_page', required: false })
   @ApiQuery({ name: 'search', required: false })
@@ -37,12 +40,13 @@ export class CategoryController {
     return this.categoryService.findAll(query);
   }
   @Get(':id')
+  @Public()
   getCategoryById(@Param('id') id: string): Promise<any> {
     return this.categoryService.findById(Number(id));
   }
 
   @Post()
-  @UseGuards(AuthGuard)
+  @Roles('Admin')
   create(
     @Req() req: any,
     @Body() createCategoryDto: CreateCategoryDto,
@@ -51,7 +55,7 @@ export class CategoryController {
   }
 
   @Put(':id')
-  @UseGuards(AuthGuard)
+  @Roles('Admin')
   update(
     @Param('id') id: string,
     @Body() updateCategoryDTO: UpdateCategoryDto,
@@ -60,13 +64,13 @@ export class CategoryController {
   }
 
   @Delete(':id')
-  @UseGuards(AuthGuard)
+  @Roles('Admin')
   delete(@Param('id') id: string) {
     return this.categoryService.delete(Number(id));
   }
 
   @Post(':categoryId/upload-image-category')
-  @UseGuards(AuthGuard)
+  @Roles('Admin')
   @UseInterceptors(
     FileInterceptor('image-category', {
       storage: storageConfig('category'),

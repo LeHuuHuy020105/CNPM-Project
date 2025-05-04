@@ -4,10 +4,11 @@ import { CategoryService } from 'src/service/category/category.service';
 import { CategoryController } from '../controller/category/category.controller';
 import { Category } from '../entities/category.entity';
 import { ConfigModule } from '@nestjs/config';
+import { User } from 'src/entities/user.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Category]),
+    TypeOrmModule.forFeature([Category, User]),
     ConfigModule, // Thêm để cung cấp Repository<Category>
   ],
   providers: [CategoryService],
