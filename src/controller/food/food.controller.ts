@@ -4,6 +4,8 @@ import {
   Controller,
   Delete,
   Get,
+  HttpException,
+  HttpStatus,
   Param,
   Post,
   Query,
@@ -21,7 +23,7 @@ import { AuthGuard } from 'src/auth/auth-guard';
 import { FoodService } from 'src/service/food/food.service';
 import { CreateFoodDto } from 'src/dto/food/create_food_dto';
 import { FilterFoodDto } from 'src/dto/food/filter_food_dto';
-import { ApiQuery } from '@nestjs/swagger';
+import { ApiQuery, ApiResponse } from '@nestjs/swagger';
 import { FoodItem } from 'src/entities/fooditem.entity';
 import { DeleteResult, UpdateResult } from 'typeorm';
 import { Roles } from 'src/auth/decorator/roles.decorator';
@@ -32,6 +34,8 @@ export class FoodController {
   constructor(private foodService: FoodService) {}
   @Post()
   @Roles('Admin')
+  @ApiResponse({ status: 201, description: 'Food item created successfully' })
+  @ApiResponse({ status: 400, description: 'Invalid input' })
   create(@Body() createFoodDto: CreateFoodDto): Promise<FoodItem> {
     return this.foodService.create(createFoodDto);
   }

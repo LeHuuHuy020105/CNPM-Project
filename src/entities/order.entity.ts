@@ -14,17 +14,12 @@ import {
 import { Table } from './table.entity';
 import { OrderDetail } from './order_detail.entity';
 import { Bill } from './bill.entity';
+import { BillStatus } from 'src/constants/bill_status';
 
 @Entity('orders')
 export class Order {
   @PrimaryGeneratedColumn()
   id: number;
-
-  @Column({ nullable: true })
-  nameCustomer: string;
-
-  @Column({ nullable: true })
-  phoneCustomer: string;
 
   @Column({
     type: 'enum',
@@ -34,12 +29,20 @@ export class Order {
 
   @Column({
     type: 'enum',
-    enum: OrderStatus,
-    default: OrderStatus.PLACED,
+    enum: BillStatus,
+    default: BillStatus.UNPAID,
   })
-  status: OrderStatus;
+  status: BillStatus;
 
-  @Column({ type: 'decimal', precision: 10, scale: 2 })
+  @Column({
+    type: 'decimal',
+    precision: 10,
+    scale: 2,
+    transformer: {
+      to: (value: number) => value,
+      from: (value: string) => Number(value),
+    },
+  })
   totalPrice: number;
 
   @CreateDateColumn()

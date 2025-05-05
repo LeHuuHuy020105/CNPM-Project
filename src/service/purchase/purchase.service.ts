@@ -3,6 +3,7 @@ import {
   NotFoundException,
   HttpException,
   HttpStatus,
+  BadRequestException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import {
@@ -127,7 +128,55 @@ export class PurchaseOrderService {
     id: number,
     updatePurchaseOrderDto: UpdatePurchaseOrderDto,
   ): Promise<UpdateResult> {
-    return this.purchaseOrderRepository.update(id, updatePurchaseOrderDto);
+    const purchaseOrder = await this.purchaseOrderRepository.findOne({
+      where: { id },
+      relations: ['purchaseOrderDetails', 'purchaseOrderDetails.product'],
+    });
+    if (!purchaseOrder) {
+      throw new NotFoundException(`purchaseOrder with ID ${id} not found`);
+    }
+    // Transaction
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+
+    try {
+      // Cập nhật PurchaseOrder
+      const updateResult = await queryRunner.manager.update(
+        PurchaseOrder,
+        id,
+        updatePurchaseOrderDto,
+      );
+
+      // Nếu status = COMPLETED, tăng FoodItem.stock
+      if (updatePurchaseOrderDto.status === PurchaseOrderStatus.COMPLETED) {
+        for (const purchaseOrderDetail of purchaseOrder.purchaseOrderDetails) {
+          const foodItem = purchaseOrderDetail.product;
+          if (!foodItem) {
+            throw new BadRequestException(
+              `FoodItem not found for PurchaseOrderDetail ID ${purchaseOrderDetail.id}`,
+            );
+          }
+          const addQuantity = purchaseOrderDetail.quantity;
+          await queryRunner.manager.update(FoodItem, foodItem.id, {
+            stock: () => `stock + ${addQuantity}`,
+          });
+        }
+      }
+
+      // Commit transaction
+      await queryRunner.commitTransaction();
+      return updateResult;
+    } catch (error) {
+      // Rollback transaction
+      await queryRunner.rollbackTransaction();
+      throw new BadRequestException(
+        `Failed to update PurchaseOrder: ${error.message}`,
+      );
+    } finally {
+      // Release query runner
+      await queryRunner.release();
+    }
   }
 
   async delete(id: number): Promise<DeleteResult> {
@@ -135,6 +184,6 @@ export class PurchaseOrderService {
   }
 
   async findById(id: number): Promise<any> {
-    return this.purchaseOrderDetailRepository.findOneBy({ id });
+    return this.purchaseOrderRepository.findOneBy({ id });
   }
 }

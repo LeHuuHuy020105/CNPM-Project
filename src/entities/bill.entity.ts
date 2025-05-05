@@ -23,13 +23,6 @@ export class Bill {
 
   @Column({
     type: 'enum',
-    enum: BillStatus,
-    default: BillStatus.UNPAID,
-  })
-  status: BillStatus;
-
-  @Column({
-    type: 'enum',
     enum: PaymentMethod,
     nullable: true,
   })

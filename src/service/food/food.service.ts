@@ -23,6 +23,8 @@ export class FoodService {
   ) {}
 
   async create(createFoodDto: CreateFoodDto): Promise<FoodItem> {
+    console.log(createFoodDto);
+
     const category = await this.categoryRepository.findOneBy({
       id: createFoodDto.categoryId,
     });

@@ -30,7 +30,7 @@ export class PurchaseController {
   ): Promise<PurchaseOrder> {
     return this.purchaseOrderService.create(
       createPurchaseOrderDto,
-      req.user_data.id,
+      req.user_id,
     );
   }
 

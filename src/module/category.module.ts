@@ -6,12 +6,16 @@ import { Category } from '../entities/category.entity';
 import { ConfigModule } from '@nestjs/config';
 import { User } from 'src/entities/user.entity';
 import { TableModule } from './table.module';
+import { OrderModule } from './order.module';
+import { OrderDetailModule } from './order_detail/order_detail.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([Category, User]),
     ConfigModule,
-    TableModule, // Thêm để cung cấp Repository<Category>
+    TableModule,
+    OrderModule,
+    OrderDetailModule, // Thêm để cung cấp Repository<Category>
   ],
   providers: [CategoryService],
   controllers: [CategoryController],

@@ -35,7 +35,7 @@ export class TableService {
     }
 
     const baseUrl = process.env.BASE_URL || 'http://localhost:9999';
-    const qrCodeUrl = `${baseUrl}/table/${tableId}/menu`;
+    const qrCodeUrl = `${baseUrl}/table/${tableId}/order`;
     const qrCodeBase64 = await urlToQRCode(qrCodeUrl);
 
     table.qr_code = qrCodeUrl;

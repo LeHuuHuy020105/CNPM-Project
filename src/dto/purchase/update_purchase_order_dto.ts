@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { PurchaseOrderStatus } from '../../constants/purchase_order_status';
-import { IsEnum } from 'class-validator';
+import { IsEnum, IsInt, IsOptional } from 'class-validator';
 
 export class UpdatePurchaseOrderDto {
   @ApiProperty({
