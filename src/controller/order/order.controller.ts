@@ -9,6 +9,7 @@ import {
 import { ApiTags } from '@nestjs/swagger';
 import { Public } from 'src/auth/decorator/public.decorator';
 import { CreateCategoryDto } from 'src/dto/category/create_category_dto';
+import { AddFoodOrderDto } from 'src/dto/order/add_food_order_dto';
 import { CreateOrderDto } from 'src/dto/order/create_order_dto';
 import { CreateOrderDetailDto } from 'src/dto/order_detail/create_order_detail';
 import { Order } from 'src/entities/order.entity';
@@ -48,8 +49,8 @@ export class OrderController {
   @Public()
   addFoodToOrder(
     @Param('idTable') idTable: string,
-    @Body(ValidationPipe) orderDetailDtos: CreateOrderDetailDto[],
+    @Body(ValidationPipe) orderDetailDto: AddFoodOrderDto,
   ): Promise<any> {
-    return this.orderService.addFoodToOrder(Number(idTable), orderDetailDtos);
+    return this.orderService.addFoodToOrder(Number(idTable), orderDetailDto);
   }
 }

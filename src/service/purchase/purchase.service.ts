@@ -20,7 +20,6 @@ import { FoodItem } from '../../entities/fooditem.entity';
 import { PurchaseOrderDetail } from '../../entities/purchase_order_detail.entity';
 import { CreatePurchaseOrderDto } from '../../dto/purchase/create_purchase_order_dto';
 import { PurchaseOrderStatus } from '../../constants/purchase_order_status';
-import { identity } from 'rxjs';
 import { UpdatePurchaseOrderDto } from '../../dto/purchase/update_purchase_order_dto';
 
 @Injectable()
@@ -180,7 +179,48 @@ export class PurchaseOrderService {
   }
 
   async delete(id: number): Promise<DeleteResult> {
-    return this.purchaseOrderRepository.delete(id);
+    const purchaseOrder = await this.purchaseOrderRepository.findOne({
+      where: { id },
+      relations: ['purchaseOrderDetails', 'purchaseOrderDetails.product'],
+    });
+
+    if (!purchaseOrder) {
+      throw new NotFoundException(`PurchaseOrder with ID ${id} not found`);
+    }
+
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+
+    try {
+      if (purchaseOrder.status === PurchaseOrderStatus.COMPLETED) {
+        // Revert FoodItem stock
+        for (const detail of purchaseOrder.purchaseOrderDetails) {
+          const foodItem = detail.product;
+          foodItem.stock -= detail.quantity;
+          if (foodItem.stock < 0) {
+            throw new BadRequestException(
+              `Cannot delete PurchaseOrder: Insufficient stock for FoodItem ${foodItem.id}`,
+            );
+          }
+          await queryRunner.manager.save(FoodItem, foodItem);
+        }
+      }
+
+      // Delete the PurchaseOrder
+      purchaseOrder.status = PurchaseOrderStatus.REJECTED;
+      await queryRunner.manager.save(PurchaseOrder, purchaseOrder);
+      await queryRunner.commitTransaction();
+
+      return { affected: 1, raw: {} };
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+      throw new BadRequestException(
+        `Failed to delete PurchaseOrder: ${error.message}`,
+      );
+    } finally {
+      await queryRunner.release();
+    }
   }
 
   async findById(id: number): Promise<any> {

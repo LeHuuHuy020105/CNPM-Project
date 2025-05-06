@@ -9,6 +9,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { BillStatus } from 'src/constants/bill_status';
 import { TableStatus } from 'src/constants/table_status';
 import { OrderType } from 'src/constants/type_order';
+import { AddFoodOrderDto } from 'src/dto/order/add_food_order_dto';
 import { CreateOrderDto } from 'src/dto/order/create_order_dto';
 import { CreateOrderDetailDto } from 'src/dto/order_detail/create_order_detail';
 import { FoodItem } from 'src/entities/fooditem.entity';
@@ -19,6 +20,7 @@ import { Repository } from 'typeorm';
 
 @Injectable()
 export class OrderService {
+  dataSource: any;
   constructor(
     @InjectRepository(Order)
     private orderRepository: Repository<Order>,
@@ -62,17 +64,15 @@ export class OrderService {
 
   async addFoodToOrder(
     idTable: number,
-    orderDetailDtos: CreateOrderDetailDto[],
+    orderDetailDto: AddFoodOrderDto,
   ): Promise<any> {
-    // Kiểm tra bàn
-    const table = await this.tableRepository.findOneBy({
-      id: idTable,
-    });
+    // Check table
+    const table = await this.tableRepository.findOneBy({ id: idTable });
     if (!table) {
       throw new NotFoundException(`Table with ID ${idTable} not found`);
     }
 
-    // Tìm Order chưa thanh toán
+    // Find unpaid order
     const currentOrder = await this.getCurrentOrder(idTable);
     if (!currentOrder) {
       throw new NotFoundException(
@@ -80,81 +80,75 @@ export class OrderService {
       );
     }
 
-    let totalPriceToAdd = 0;
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
 
-    // Xử lý từng OrderDetailDto
-    for (const dto of orderDetailDtos) {
-      // Kiểm tra món ăn
-      const foodItem = await this.foodItemRepository.findOneBy({
-        id: dto.foodItemId,
+    try {
+      let totalPriceToAdd = 0;
+
+      // Process each OrderDetailDto
+      for (const dto of orderDetailDto.foods) {
+        // Check food item with SELECT FOR UPDATE to prevent race conditions
+        const foodItem = await queryRunner.manager.findOne(FoodItem, {
+          where: { id: dto.foodItemId },
+        });
+        if (!foodItem) {
+          throw new NotFoundException(
+            `Food item with ID ${dto.foodItemId} not found`,
+          );
+        }
+        if (foodItem.stock < dto.quantity) {
+          throw new HttpException(
+            `Insufficient stock for ${foodItem.name}`,
+            HttpStatus.BAD_REQUEST,
+          );
+        }
+
+        // Calculate price
+        const priceToAdd = foodItem.sell_price * dto.quantity;
+        if (isNaN(priceToAdd)) {
+          throw new BadRequestException(
+            `Invalid price or quantity for food item ID ${dto.foodItemId}`,
+          );
+        }
+        totalPriceToAdd += priceToAdd;
+
+        // Create and save OrderDetail
+        const orderDetail = this.orderDetailRepository.create({
+          order: currentOrder,
+          foodItem,
+          quantity: dto.quantity,
+        });
+        await queryRunner.manager.save(OrderDetail, orderDetail);
+
+        // Update stock
+        foodItem.stock -= dto.quantity;
+        await queryRunner.manager.save(FoodItem, foodItem);
+      }
+
+      // Update totalPrice with precise calculation
+      currentOrder.totalPrice = Number(
+        (currentOrder.totalPrice + totalPriceToAdd).toFixed(2),
+      );
+      await queryRunner.manager.save(Order, currentOrder);
+
+      await queryRunner.commitTransaction();
+
+      // Return Order with relations
+      return this.orderRepository.findOne({
+        where: { id: currentOrder.id },
+        relations: ['table', 'orderDetails', 'orderDetails.foodItem'],
       });
-      if (!foodItem) {
-        throw new NotFoundException(
-          `Food item with ID ${dto.foodItemId} not found`,
-        );
-      }
-      if (foodItem.stock < dto.quantity) {
-        throw new HttpException(
-          `Insufficient stock for ${foodItem.name}`,
-          HttpStatus.BAD_REQUEST,
-        );
-      }
-
-      // Debug: Log giá trị
-      console.log(
-        'foodItem.sell_price:',
-        foodItem.sell_price,
-        'typeof:',
-        typeof foodItem.sell_price,
-      );
-      console.log(
-        'dto.quantity:',
-        dto.quantity,
-        'typeof:',
-        typeof dto.quantity,
-      );
-      console.log(
-        'currentOrder.totalPrice (before):',
-        currentOrder.totalPrice,
-        'typeof:',
-        typeof currentOrder.totalPrice,
-      );
-
-      // Tính giá món
-      const priceToAdd = foodItem.sell_price * dto.quantity;
-      if (isNaN(priceToAdd)) {
-        throw new BadRequestException(
-          `Invalid price or quantity for food item ID ${dto.foodItemId}`,
-        );
-      }
-      totalPriceToAdd += priceToAdd;
-
-      // Tạo và lưu OrderDetail
-      const orderDetail = this.orderDetailRepository.create({
-        order: currentOrder,
-        foodItem,
-        quantity: dto.quantity,
-      });
-      await this.orderDetailRepository.save(orderDetail);
-
-      // Cập nhật stock
-      foodItem.stock -= dto.quantity;
-      await this.foodItemRepository.save(foodItem);
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+      throw error instanceof HttpException
+        ? error
+        : new BadRequestException(
+            `Failed to add food to order: ${error.message}`,
+          );
+    } finally {
+      await queryRunner.release();
     }
-
-    // Cập nhật totalPrice
-    currentOrder.totalPrice = Number(
-      (currentOrder.totalPrice + totalPriceToAdd).toFixed(2),
-    );
-    console.log('totalPriceToAdd:', totalPriceToAdd);
-    console.log('currentOrder.totalPrice (after):', currentOrder.totalPrice);
-
-    await this.orderRepository.save(currentOrder);
-
-    // Trả về Order với quan hệ
-    return this.orderRepository.findOne({
-      where: { id: currentOrder.id },
-      relations: ['table', 'orderDetails', 'orderDetails.foodItem'],
-    });
   }
 }

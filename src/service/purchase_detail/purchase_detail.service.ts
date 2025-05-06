@@ -7,7 +7,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { PurchaseOrderStatus } from 'src/constants/purchase_order_status';
 import { PurchaseOrder } from 'src/entities/purchase.entity';
 import { PurchaseOrderDetail } from 'src/entities/purchase_order_detail.entity';
-import { Repository, UpdateResult } from 'typeorm';
+import { DeleteResult, Repository, UpdateResult } from 'typeorm';
 
 @Injectable()
 export class PurchaseDetailService {
