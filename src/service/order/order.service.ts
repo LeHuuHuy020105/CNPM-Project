@@ -16,11 +16,10 @@ import { FoodItem } from 'src/entities/fooditem.entity';
 import { Order } from 'src/entities/order.entity';
 import { OrderDetail } from 'src/entities/order_detail.entity';
 import { Table } from 'src/entities/table.entity';
-import { Repository } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 
 @Injectable()
 export class OrderService {
-  dataSource: any;
   constructor(
     @InjectRepository(Order)
     private orderRepository: Repository<Order>,
@@ -30,6 +29,7 @@ export class OrderService {
     private orderDetailRepository: Repository<OrderDetail>,
     @InjectRepository(FoodItem)
     private foodItemRepository: Repository<FoodItem>,
+    private readonly dataSource: DataSource,
   ) {}
 
   async create(
@@ -43,10 +43,13 @@ export class OrderService {
     if (!table) {
       throw new NotFoundException(`Table with ID ${idTable} not found`);
     }
-    table.status = TableStatus.OCCUPIED;
+    if ((table.status = TableStatus.EMPTY)) {
+      throw new NotFoundException(
+        `Table with ID ${idTable} must book by staff`,
+      );
+    }
     await this.tableRepository.update(idTable, table);
     const order = this.orderRepository.create({
-      type: OrderType.DINE_IN,
       totalPrice: 0,
       table,
     });
@@ -120,6 +123,7 @@ export class OrderService {
           foodItem,
           quantity: dto.quantity,
         });
+        console.log(orderDetail);
         await queryRunner.manager.save(OrderDetail, orderDetail);
 
         // Update stock

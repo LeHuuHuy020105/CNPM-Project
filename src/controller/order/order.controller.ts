@@ -24,7 +24,7 @@ export class OrderController {
     private tableService: TableService,
   ) {}
 
-  @Post(':idTable/order')
+  @Post(':idTable/menu')
   @Public()
   create(
     @Param('idTable') idTable: string,
@@ -49,7 +49,7 @@ export class OrderController {
   @Public()
   addFoodToOrder(
     @Param('idTable') idTable: string,
-    @Body(ValidationPipe) orderDetailDto: AddFoodOrderDto,
+    @Body() orderDetailDto: AddFoodOrderDto,
   ): Promise<any> {
     return this.orderService.addFoodToOrder(Number(idTable), orderDetailDto);
   }

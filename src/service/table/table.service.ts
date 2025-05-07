@@ -124,6 +124,7 @@ export class TableService {
     if (table.status == TableStatus.OCCUPIED) {
       throw new NotFoundException(`Table with ID ${idTable} is occpuied`);
     }
+    updateTableDto.type = TableStatus.OCCUPIED;
     return await this.tableRepository.update(idTable, updateTableDto);
   }
 }
