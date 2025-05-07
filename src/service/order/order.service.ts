@@ -43,11 +43,6 @@ export class OrderService {
     if (!table) {
       throw new NotFoundException(`Table with ID ${idTable} not found`);
     }
-    if ((table.status = TableStatus.EMPTY)) {
-      throw new NotFoundException(
-        `Table with ID ${idTable} must book by staff`,
-      );
-    }
     await this.tableRepository.update(idTable, table);
     const order = this.orderRepository.create({
       totalPrice: 0,

@@ -15,16 +15,6 @@ export class Table {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
-  capcity: number;
-
-  @Column({
-    type: 'enum',
-    enum: TableStatus,
-    default: TableStatus.EMPTY,
-  })
-  status: TableStatus;
-
   @Column({ nullable: true })
   qr_code: string;
 

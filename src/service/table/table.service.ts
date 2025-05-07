@@ -5,7 +5,6 @@ import { Table } from 'src/entities/table.entity';
 import { urlToQRCode } from 'helpers/qr_util';
 import { CreateTableDto } from 'src/dto/table/create_table_dto';
 import { FilterUserDto } from 'src/dto/user/filter_user_dto';
-import { UpdateTableDto } from 'src/dto/table/update_table_dto';
 import { OrderStatus } from 'src/constants/order_status';
 import { TableStatus } from 'src/constants/table_status';
 
@@ -23,8 +22,10 @@ export class TableService {
     const baseUrl = process.env.BASE_URL || 'http://localhost:9999';
     const qrCodeUrl = `${baseUrl}/table/${newTable.id}/menu`;
 
+    const base64 = (await this.generateQRCode(newTable.id)).qrCodeBase64;
+
     // Cập nhật qr_code
-    newTable.qr_code = qrCodeUrl;
+    newTable.qr_code = base64;
     return this.tableRepository.save(newTable);
   }
 
@@ -90,14 +91,7 @@ export class TableService {
       order: { created_at: 'DESC' },
       take: items_per_page,
       skip: skip,
-      select: [
-        'id',
-        'capcity',
-        'status',
-        'qr_code',
-        'created_at',
-        'updated_at',
-      ],
+      select: ['id', 'qr_code', 'created_at', 'updated_at'],
     });
     const lastPage = Math.ceil(total / items_per_page);
     const nextPage = page + 1 > lastPage ? null : page + 1;
@@ -111,20 +105,5 @@ export class TableService {
       prevPage,
       lastPage,
     };
-  }
-
-  async bookTable(
-    idTable: number,
-    updateTableDto: UpdateTableDto,
-  ): Promise<UpdateResult> {
-    const table = await this.tableRepository.findOneBy({ id: idTable });
-    if (!table) {
-      throw new NotFoundException(`Table with ID ${idTable} not found`);
-    }
-    if (table.status == TableStatus.OCCUPIED) {
-      throw new NotFoundException(`Table with ID ${idTable} is occpuied`);
-    }
-    updateTableDto.type = TableStatus.OCCUPIED;
-    return await this.tableRepository.update(idTable, updateTableDto);
   }
 }
