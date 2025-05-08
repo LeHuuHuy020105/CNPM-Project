@@ -5,7 +5,7 @@ export const dataSourceOption: DataSourceOptions = {
   host: 'localhost',
   port: 3306,
   username: 'root',
-  password: '',
+  password: 'Admin@123',
   database: 'cnpm',
   entities: ['dist/**/*.entity.js'],
   migrations: ['dist/db/migrations/*.js'],

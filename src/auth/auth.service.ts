@@ -42,7 +42,7 @@ export class AuthService {
     }
     //generate access token and refresh token
     const payload = { id: user.id, email: user.email };
-    return this.generateToken(payload);
+    return { ...await this.generateToken(payload), user};
   }
 
   async refreshToken(refresh_token: string): Promise<any> {
@@ -75,12 +75,15 @@ export class AuthService {
     const access_token = await this.jwtService.signAsync(payload);
     const refresh_token = await this.jwtService.signAsync(payload, {
       secret: this.configService.get<string>('SECRET'),
-      expiresIn: this.configService.get<string>('EXP_IN_REFRESH_TOKEN'),
+      expiresIn: this.configService.get<string>('EXP_IN_REFRESH_TOKEN') || '7d',
     });
+    console.log(this.configService.get<string>('EXP_IN_REFRESH_TOKEN'));
     await this.userRepository.update(
       { email: payload.email },
       { refresh_token: refresh_token },
     );
+
+    // lấy user từ database
 
     return { access_token, refresh_token };
   }
