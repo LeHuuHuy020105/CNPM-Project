@@ -31,4 +31,9 @@ export class TableController {
   findAll(@Query() query: FilterTableDto): Promise<any> {
     return this.tableService.findAll(query);
   }
+
+  @Get(':id')
+  findById(@Param('id') id: string): Promise<any> {
+    return this.tableService.findById(Number(id));
+  }
 }

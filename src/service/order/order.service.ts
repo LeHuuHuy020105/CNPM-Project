@@ -114,7 +114,7 @@ export class OrderService {
 
         // Create and save OrderDetail
         const orderDetail = this.orderDetailRepository.create({
-          order: currentOrder,
+          // order: currentOrder,
           foodItem,
           quantity: dto.quantity,
         });

@@ -8,18 +8,17 @@ import {
   JoinTable,
   ManyToMany,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { Table } from './table.entity';
-import { Order } from './order.entity';
+import { OrderType } from 'src/constants/type_order';
+import { OrderDetail } from './order_detail.entity';
 @Entity('bills')
 export class Bill {
   @PrimaryGeneratedColumn()
   id: number;
-
-  @Column({ type: 'decimal', precision: 10, scale: 2 })
-  totalPrice: number;
 
   @Column({
     type: 'enum',
@@ -27,6 +26,30 @@ export class Bill {
     nullable: true,
   })
   paymentMethod: PaymentMethod;
+
+  @Column({
+    type: 'enum',
+    enum: OrderType,
+  })
+  type: OrderType;
+
+  @Column({
+    type: 'enum',
+    enum: BillStatus,
+    default: BillStatus.UNPAID,
+  })
+  status: BillStatus;
+
+  @Column({
+    type: 'decimal',
+    precision: 10,
+    scale: 2,
+    transformer: {
+      to: (value: number) => value,
+      from: (value: string) => Number(value),
+    },
+  })
+  totalPrice: number;
 
   @CreateDateColumn()
   created_at: Date;
@@ -38,11 +61,6 @@ export class Bill {
   @JoinColumn({ name: 'table_id' })
   table: Table;
 
-  @ManyToMany(() => Order, (order) => order.bills)
-  @JoinTable({
-    name: 'bill_orders',
-    joinColumn: { name: 'bill_id', referencedColumnName: 'id' },
-    inverseJoinColumn: { name: 'order_id', referencedColumnName: 'id' },
-  })
-  orders: Order[];
+  @OneToMany(() => OrderDetail, (detail) => detail.bill)
+  orderDetails: OrderDetail[];
 }

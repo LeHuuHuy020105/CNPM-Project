@@ -141,6 +141,6 @@ export class FoodService {
     if (image && foodItem.image) {
       await deleteOldImage(foodItem.image);
     }
-    return await this.categoryRepository.update(id, { image });
+    return await this.foodItemRepository.update(id, { image });
   }
 }

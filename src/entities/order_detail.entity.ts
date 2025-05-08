@@ -1,15 +1,15 @@
 import { Entity, Column, PrimaryGeneratedColumn, ManyToOne } from 'typeorm';
-import { Order } from './order.entity';
 import { FoodItem } from './fooditem.entity';
 import { OrderStatus } from 'src/constants/order_status';
+import { Bill } from './bill.entity';
 
 @Entity('order_details')
 export class OrderDetail {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne(() => Order, (order) => order.orderDetails)
-  order: Order;
+  @ManyToOne(() => Bill, (bill) => bill.orderDetails)
+  bill: Bill;
 
   @ManyToOne(() => FoodItem)
   foodItem: FoodItem;

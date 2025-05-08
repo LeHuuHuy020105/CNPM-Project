@@ -54,10 +54,4 @@ export class Order {
   @ManyToOne(() => Table, (table) => table.orders, { nullable: true })
   @JoinColumn({ name: 'table_id' })
   table: Table;
-
-  @OneToMany(() => OrderDetail, (detail) => detail.order)
-  orderDetails: OrderDetail[];
-
-  @ManyToMany(() => Bill, (bill) => bill.orders)
-  bills: Bill[];
 }

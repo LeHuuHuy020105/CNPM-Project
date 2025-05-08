@@ -16,6 +16,7 @@ export class TableService {
   ) {}
 
   async create(createTableDto: CreateTableDto): Promise<Table> {
+    console.log(CreateTableDto);
     const newTable = await this.tableRepository.save(createTableDto);
 
     // Tạo URL QR code với id
@@ -105,5 +106,8 @@ export class TableService {
       prevPage,
       lastPage,
     };
+  }
+  findById(id: number): Promise<any> {
+    return this.tableRepository.findOneBy({ id });
   }
 }
