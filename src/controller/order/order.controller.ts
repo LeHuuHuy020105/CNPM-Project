@@ -8,11 +8,10 @@ import {
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { Public } from 'src/auth/decorator/public.decorator';
-import { CreateCategoryDto } from 'src/dto/category/create_category_dto';
+import { CreateBillDto } from 'src/dto/bill/create_bill_dto';
 import { AddFoodOrderDto } from 'src/dto/order/add_food_order_dto';
-import { CreateOrderDto } from 'src/dto/order/create_order_dto';
-import { CreateOrderDetailDto } from 'src/dto/order_detail/create_order_detail';
-import { Order } from 'src/entities/order.entity';
+import { Bill } from 'src/entities/bill.entity';
+import { BillService } from 'src/service/bill/bill.service';
 import { OrderService } from 'src/service/order/order.service';
 import { TableService } from 'src/service/table/table.service';
 
@@ -20,18 +19,9 @@ import { TableService } from 'src/service/table/table.service';
 @Controller('table')
 export class OrderController {
   constructor(
-    private orderService: OrderService,
     private tableService: TableService,
+    private orderService: OrderService,
   ) {}
-
-  @Post(':idTable/menu')
-  @Public()
-  create(
-    @Param('idTable') idTable: string,
-    @Body() createOrderDto: CreateOrderDto,
-  ): Promise<Order> {
-    return this.orderService.create(Number(idTable), createOrderDto);
-  }
 
   @Get(':idTable/order/qr')
   @Public()
@@ -45,12 +35,12 @@ export class OrderController {
     return this.orderService.getCurrentOrder(Number(idTable));
   }
 
-  @Post(':idTable/order/add-item')
+  @Post(':idTable/order/confirmOrder')
   @Public()
-  addFoodToOrder(
+  confirmOrder(
     @Param('idTable') idTable: string,
-    @Body() orderDetailDto: AddFoodOrderDto,
+    @Body() createBillDto: CreateBillDto,
   ): Promise<any> {
-    return this.orderService.addFoodToOrder(Number(idTable), orderDetailDto);
+    return this.orderService.confirmOrder(Number(idTable), createBillDto);
   }
 }

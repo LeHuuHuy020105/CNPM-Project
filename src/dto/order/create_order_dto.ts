@@ -1,5 +1,6 @@
 import {
   ArrayNotEmpty,
+  IsArray,
   IsEnum,
   IsInt,
   IsOptional,
@@ -13,13 +14,5 @@ import { Type } from 'class-transformer';
 import { OrderType } from 'src/constants/type_order';
 
 export class CreateOrderDto {
-  @IsEnum(OrderType)
-  @IsOptional()
-  @ApiProperty({
-    description: 'Order type',
-    example: OrderType.DINE_IN,
-    enum: OrderType,
-    default: OrderType.DINE_IN,
-  })
-  type: OrderType.DINE_IN;
+ 
 }
