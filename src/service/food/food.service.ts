@@ -82,7 +82,8 @@ export class FoodService {
 
     // Lọc theo khoảng giá
     if (query.min_price !== undefined && query.max_price !== undefined) {
-      if (query.min_price > query.max_price) {
+      if (Number(query.min_price) > Number(query.max_price)) {
+        console.log('huy');
         throw new HttpException(
           'min_price must be less than or equal to max_price',
           HttpStatus.BAD_REQUEST,

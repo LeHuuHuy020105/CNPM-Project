@@ -21,12 +21,12 @@ export class TableService {
 
     // Tạo URL QR code với id
     const baseUrl = process.env.BASE_URL || 'http://localhost:9999';
-    const qrCodeUrl = `${baseUrl}/table/${newTable.id}/menu`;
+    const qrCodeUrl = `${baseUrl}/table/${newTable.id}/order`;
 
     const base64 = (await this.generateQRCode(newTable.id)).qrCodeBase64;
 
     // Cập nhật qr_code
-    newTable.qr_code = base64;
+    newTable.qr_code = qrCodeUrl;
     return this.tableRepository.save(newTable);
   }
 

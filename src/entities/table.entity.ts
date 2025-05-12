@@ -7,7 +7,6 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { Order } from './order.entity';
 import { Bill } from './bill.entity';
 
 @Entity('tables')
@@ -23,9 +22,6 @@ export class Table {
 
   @UpdateDateColumn()
   updated_at: Date;
-
-  @OneToMany(() => Order, (purchaseOrder) => purchaseOrder.table)
-  orders: Order[];
 
   @OneToMany(() => Bill, (bill) => bill.table, { nullable: true })
   bills: Bill[];
