@@ -31,8 +31,8 @@ import { Public } from 'src/auth/decorator/public.decorator';
 
 @Controller('food')
 export class FoodController {
-  
-  constructor(private foodService: FoodService) {}
+
+  constructor(private foodService: FoodService) { }
 
   @Post()
   @Roles('Admin')
@@ -62,6 +62,14 @@ export class FoodController {
     console.log(query);
     return this.foodService.findAll(query);
   }
+
+  @Get('category/:categoryId')
+  @Public()
+  getbycategoryId(
+    @Param('categoryId') categoryId: string): Promise<any> {
+    return this.foodService.getbycategoryId(Number(categoryId));
+  }
+
 
   @Delete(':id')
   @Roles('Admin')

@@ -11,6 +11,7 @@ import { DeleteResult, Like, Repository, UpdateResult } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { deleteOldImage } from 'helpers/deleteOldImage';
 import { FilterCategoryDto } from 'src/dto/category/filter_category_dto';
+import { UpdateCategoryDto } from 'src/dto/category/update_category_dto';
 
 @Injectable()
 export class CategoryService {
@@ -54,6 +55,7 @@ export class CategoryService {
         'status',
         'created_at',
         'created_update',
+        'image',
       ],
     });
     const lastPage = Math.ceil(total / items_per_page);
@@ -75,7 +77,7 @@ export class CategoryService {
 
   async update(
     id: number,
-    updateCategoryDTO: CreateCategoryDto,
+    updateCategoryDTO: UpdateCategoryDto,
   ): Promise<UpdateResult> {
     return await this.categoryRepository.update(id, updateCategoryDTO);
   }

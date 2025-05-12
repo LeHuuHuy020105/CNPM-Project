@@ -47,6 +47,7 @@ export class FoodService {
       );
     }
   }
+
   async findAll(query: FilterFoodDto): Promise<any> {
     const items_per_page = Number(query.item_per_page) || 10;
     const page = Number(query.page) || 1;
@@ -122,6 +123,15 @@ export class FoodService {
       nextPage,
       prevPage,
       lastPage,
+    };
+  }
+
+  async getbycategoryId(categoryId: number): Promise<any> {
+    const res: FoodItem[] = await this.foodItemRepository.find({
+      where: { category: { id: categoryId } },
+    });
+    return {
+      data: res
     };
   }
 
