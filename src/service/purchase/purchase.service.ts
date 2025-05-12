@@ -4,6 +4,8 @@ import {
   HttpException,
   HttpStatus,
   BadRequestException,
+  Param,
+  Req,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import {
@@ -12,6 +14,9 @@ import {
   In,
   UpdateResult,
   DeleteResult,
+  Like,
+  MoreThanOrEqual,
+  LessThanOrEqual,
 } from 'typeorm';
 import { PurchaseOrder } from '../../entities/purchase.entity';
 import { Supplier } from '../../entities/supplier.entity';
@@ -50,26 +55,17 @@ export class PurchaseOrderService {
       );
     }
 
-    const { supplierId, details } = createPurchaseOrderDto;
+    const { details } = createPurchaseOrderDto;
 
     if (
-      !supplierId ||
       !details ||
       !Array.isArray(details) ||
       details.length === 0
     ) {
       throw new HttpException(
-        'Invalid request body: supplierId and details are required',
+        'Invalid request body: details are required',
         HttpStatus.BAD_REQUEST,
       );
-    }
-
-    // Validate Supplier
-    const supplier = await this.supplierRepository.findOneBy({
-      id: supplierId,
-    });
-    if (!supplier) {
-      throw new NotFoundException(`Supplier with ID ${supplierId} not found`);
     }
 
     // Validate User
@@ -96,7 +92,6 @@ export class PurchaseOrderService {
     try {
       // Tạo PurchaseOrder
       const purchaseOrder = await this.purchaseOrderRepository.save({
-        supplier: supplier as Supplier,
         user: user as User,
         status: PurchaseOrderStatus.PENDING,
       });
@@ -108,6 +103,7 @@ export class PurchaseOrderService {
         detailEntity.product = foodItem; // Sửa từ product thành foodItem
         detailEntity.quantity = detail.quantity;
         detailEntity.purchaseOrder = purchaseOrder;
+        detailEntity.price = detail.price; // Lưu giá tại thời điểm nhập
         return detailEntity;
       });
 
@@ -225,5 +221,48 @@ export class PurchaseOrderService {
 
   async findById(id: number): Promise<any> {
     return this.purchaseOrderRepository.findOneBy({ id });
+  }
+
+
+  async findAll(
+    page: number,
+    limit: number,
+    search: string,
+    searchBy: string,
+    minPrice: number,
+    maxPrice: number,
+  ): Promise<any> {
+    const whereConditions: any = {};
+
+    // Thêm điều kiện tìm kiếm nếu có
+    if (search) {
+      whereConditions[searchBy] = Like(`%${search}%`);
+    }
+
+    // Thêm điều kiện minPrice nếu có
+    if (minPrice !== -1) {
+      whereConditions.price = MoreThanOrEqual(minPrice);
+    }
+
+    // Thêm điều kiện maxPrice nếu có
+    if (maxPrice !== -1) {
+      whereConditions.price = LessThanOrEqual(maxPrice);
+    }
+
+    // Tìm tất cả các đơn hàng với các điều kiện đã thiết lập
+    return this.purchaseOrderRepository.find({
+      relations: ['purchaseOrderDetails', 'purchaseOrderDetails.product', 'user'],
+      select: {
+        user: {
+          id: true,
+          first_name: true,
+          last_name: true,
+          email: true,
+        },  // Chọn chỉ các trường cần thiết từ bảng user
+      },
+      skip: (page - 1) * limit, // Xác định điểm bắt đầu dữ liệu
+      take: limit, // Số lượng bản ghi trên mỗi trang
+      where: whereConditions, // Điều kiện tìm kiếm
+    });
   }
 }

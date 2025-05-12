@@ -79,13 +79,13 @@ export class OrderService {
    * @returns Hóa đơn đã tạo
    */
   async confirmOrder(
-    idTable: number,
+    // idTable: number,
     createBillDto: CreateBillDto,
   ): Promise<any> {
     // Kiểm tra bàn
-    const table = await this.tableRepository.findOneBy({ id: idTable });
+    const table = await this.tableRepository.findOneBy({ id: createBillDto.tableId });
     if (!table) {
-      throw new NotFoundException(`Table with ID ${idTable} not found`);
+      throw new NotFoundException(`Table with ID ${createBillDto.tableId} not found`);
     }
 
     // Kiểm tra orderDetails
@@ -109,8 +109,10 @@ export class OrderService {
 
       // Tạo bill
       const bill = this.billRepository.create({
-        table,
-        type: createBillDto.type || 'DINE_IN',
+        table: table,
+        type: createBillDto.type,
+        status: BillStatus.PAID,
+        paymentMethod: createBillDto.paymentMethod,
         totalPrice,
       });
       await queryRunner.manager.save(Bill, bill);

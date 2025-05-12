@@ -25,9 +25,9 @@ export class PurchaseOrder {
   })
   status: PurchaseOrderStatus;
 
-  @ManyToOne(() => Supplier, (supplier) => supplier.purchaseOrders)
-  @JoinColumn({ name: 'supplier_id' })
-  supplier: Supplier;
+  // @ManyToOne(() => Supplier, (supplier) => supplier.purchaseOrders)
+  // @JoinColumn({ name: 'supplier_id' })
+  // supplier: Supplier;
 
   @OneToMany(
     () => PurchaseOrderDetail,

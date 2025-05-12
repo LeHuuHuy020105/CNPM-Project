@@ -34,6 +34,7 @@ export class Supplier {
   @UpdateDateColumn()
   created_update: Date;
 
-  @OneToMany(() => PurchaseOrder, (purchaseOrder) => purchaseOrder.supplier)
-  purchaseOrders: PurchaseOrder[]; // Thêm quan hệ OneToMany
+//   @OneToMany(() => PurchaseOrder, (purchaseOrder) => purchaseOrder.supplier)
+//   purchaseOrders: PurchaseOrder[]; // Thêm quan hệ OneToMany
+// }
 }

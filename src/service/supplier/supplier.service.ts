@@ -63,7 +63,6 @@ export class SupplierService {
         'phone',
         'created_at',
         'created_update',
-        'purchaseOrders',
       ],
     });
     const lastPage = Math.ceil(total / items_per_page);

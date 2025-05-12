@@ -16,6 +16,8 @@ import { RolesGuard } from './auth/role.guard';
 import { AuthGuard } from './auth/auth-guard';
 import { User } from './entities/user.entity';
 import { QrCodeController } from './controller/qr_code/qr_code.controller';
+import { Bill } from './entities/bill.entity';
+import { BillModule } from './module/bill.module';
 
 @Module({
   imports: [
@@ -25,6 +27,7 @@ import { QrCodeController } from './controller/qr_code/qr_code.controller';
     AuthModule,
     CategoryModule,
     FoodModule,
+    BillModule,
     SupplierModule,
     PurchaseModule,
     PurchaseDetailModule,

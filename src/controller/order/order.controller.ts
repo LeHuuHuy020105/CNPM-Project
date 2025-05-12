@@ -41,6 +41,6 @@ export class OrderController {
     @Param('idTable') idTable: string,
     @Body() createBillDto: CreateBillDto,
   ): Promise<any> {
-    return this.orderService.confirmOrder(Number(idTable), createBillDto);
+    return this.orderService.confirmOrder(createBillDto);
   }
 }
